@@ -28,7 +28,7 @@ public class ExpenseTableControl implements TableControl {
         protected static final String SQL_CREATE = " create table " + EXPENSE_TABLE + " ( "
                 + "  EXP_OID INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),  " //-- object identification
                 + "  EXP_ACC_OID INTEGER NOT NULL,  "
-                + "  EXP_VALUE INTEGER NOT NULL,  "
+                + "  EXP_VALUE DOUBLE NOT NULL,  "
                 + "  EXP_PAYED BOOLEAN NOT NULL,  "
                 + "  EXP_REPEAT BOOLEAN NOT NULL,  "
                 + "  EXP_DESCRIPTION VARCHAR(256) NOT NULL,   "
@@ -174,7 +174,7 @@ public class ExpenseTableControl implements TableControl {
                 expTable.computeHash();
 
                 pstn_insert.setInt(1, expTable.getAccOid());
-                pstn_insert.setInt(2, expTable.getValue());
+                pstn_insert.setDouble(2, expTable.getValue());
                 pstn_insert.setBoolean(3, expTable.isPayed());
                 pstn_insert.setBoolean(4, expTable.isRepeat());
                 pstn_insert.setString(5, expTable.getDescription());
@@ -256,7 +256,7 @@ public class ExpenseTableControl implements TableControl {
                 expense.setDay(resultSet.getInt("EXP_DAY"));
                 expense.setMonth(resultSet.getInt("EXP_MONTH"));
                 expense.setYear(resultSet.getInt("EXP_YEAR"));
-                expense.setValue(resultSet.getInt("EXP_VALUE"));
+                expense.setValue(resultSet.getDouble("EXP_VALUE"));
                 expense.setPayed(resultSet.getBoolean("EXP_PAYED"));
                 expense.setRepeat(resultSet.getBoolean("EXP_REPEAT"));
                 expense.setHashId(resultSet.getString("EXP_HASH_ID"));

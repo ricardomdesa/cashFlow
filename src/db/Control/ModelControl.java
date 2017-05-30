@@ -8,6 +8,7 @@ package db.Control;
 import Tables.AccountTable;
 import Tables.CategoryTable;
 import Tables.ExpenseTable;
+import Tables.IncomeTable;
 import Tables.TableFiller;
 import db.tableInterfaces.TableModel;
 import db.util.DBHelper;
@@ -25,6 +26,7 @@ public class ModelControl {
 
     private static AccountTableControl accountTblCtrl;
     private static ExpenseTableControl expenseTblCtrl;
+    private static IncomeTableControl incomeTblCtrl;
     private static CategoryTableControl categoryTblCtrl;
 
     static {
@@ -40,26 +42,46 @@ public class ModelControl {
     public static void start() throws SQLException {
         accountTblCtrl = new AccountTableControl();
         expenseTblCtrl = new ExpenseTableControl();
+        incomeTblCtrl = new IncomeTableControl();
         categoryTblCtrl = new CategoryTableControl();
 
         accountTblCtrl.setConnection(DBHelper.getConnection());
         expenseTblCtrl.setConnection(DBHelper.getConnection());
+        incomeTblCtrl.setConnection(DBHelper.getConnection());
         categoryTblCtrl.setConnection(DBHelper.getConnection());
     }
 
     public static void createTables() throws SQLException {
         accountTblCtrl.createTable();
         expenseTblCtrl.createTable();
+        incomeTblCtrl.createTable();
         categoryTblCtrl.createTable();
         accountTblCtrl.createStatements();
         expenseTblCtrl.createStatements();
+        incomeTblCtrl.createStatements();
         categoryTblCtrl.createStatements();
     }
 
     public static void dropTables() throws SQLException {
         accountTblCtrl.dropTable();
         expenseTblCtrl.dropTable();
+        incomeTblCtrl.dropTable();
         categoryTblCtrl.dropTable();
+    }
+
+    public static void update(TableModel tableModel) throws SQLException {
+
+        if (tableModel instanceof AccountTable) {
+            accountTblCtrl.update(tableModel);
+        } else if (tableModel instanceof ExpenseTable) {
+            expenseTblCtrl.update(tableModel);
+        } else if (tableModel instanceof IncomeTable) {
+            incomeTblCtrl.update(tableModel);
+        } else if (tableModel instanceof CategoryTable) {
+            categoryTblCtrl.update(tableModel);
+        } else {
+            throw new SQLException("Unknow object " + tableModel.getClass());
+        }
     }
 
     public static void save(TableModel tableModel) throws SQLException {
@@ -68,6 +90,8 @@ public class ModelControl {
             accountTblCtrl.save(tableModel);
         } else if (tableModel instanceof ExpenseTable) {
             expenseTblCtrl.save(tableModel);
+        } else if (tableModel instanceof IncomeTable) {
+            incomeTblCtrl.save(tableModel);
         } else if (tableModel instanceof CategoryTable) {
             categoryTblCtrl.save(tableModel);
         } else {
@@ -86,6 +110,12 @@ public class ModelControl {
 
         if (classObject instanceof AccountTable) {
             tableModel = accountTblCtrl.load(id);
+        } else if (classObject instanceof ExpenseTable) {
+            tableModel = expenseTblCtrl.load(id);
+        } else if (classObject instanceof IncomeTable) {
+            tableModel = incomeTblCtrl.load(id);
+        } else if (classObject instanceof CategoryTable) {
+            tableModel = categoryTblCtrl.load(id);
         } else {
             throw new SQLException("Unknow object " + clazz);
         }

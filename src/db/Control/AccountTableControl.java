@@ -27,9 +27,9 @@ public class AccountTableControl implements TableControl {
 
         protected static final String SQL_CREATE = " create table " + ACCOUNT_TABLE + " ( "
                 + "  ACC_OID INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),  " //-- object identification
-                + "  ACC_VALUE INTEGER NOT NULL,  "
-                + "  ACC_TOTAL_EXPENSE INTEGER NOT NULL,  "
-                + "  ACC_TOTAL_INCOME INTEGER NOT NULL,  "
+                + "  ACC_VALUE DOUBLE NOT NULL,  "
+                + "  ACC_TOTAL_EXPENSE DOUBLE NOT NULL,  "
+                + "  ACC_TOTAL_INCOME DOUBLE NOT NULL,  "
                 + "  ACC_NAME VARCHAR(256) NOT NULL,   " //Itau, carteira, etc
                 + "  ACC_STS VARCHAR(128) NOT NULL,  "
                 + "  ACC_TYPE VARCHAR(256) NOT NULL,  " // Poupanca, corrente, salario
@@ -160,9 +160,9 @@ public class AccountTableControl implements TableControl {
 
                 testeTable.computeHash();
 
-                pstn_insert.setInt(1, testeTable.getValue());
-                pstn_insert.setInt(2, testeTable.getTotalExpense());
-                pstn_insert.setInt(3, testeTable.getTotalIncome());
+                pstn_insert.setDouble(1, testeTable.getValue());
+                pstn_insert.setDouble(2, testeTable.getTotalExpense());
+                pstn_insert.setDouble(3, testeTable.getTotalIncome());
                 pstn_insert.setString(4, testeTable.getName());
                 pstn_insert.setString(5, testeTable.getStatus());
                 pstn_insert.setString(6, testeTable.getType());
@@ -215,7 +215,34 @@ public class AccountTableControl implements TableControl {
 
     @Override
     public void update(TableModel tableModel) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+
+            if (tableModel instanceof AccountTable) {
+                AccountTable accountTable = (AccountTable) tableModel;
+
+                accountTable.computeHash();
+
+                pstn_update.setDouble(1, accountTable.getValue());
+                pstn_update.setDouble(2, accountTable.getTotalExpense());
+                pstn_update.setDouble(3, accountTable.getTotalIncome());
+                pstn_update.setString(4, accountTable.getName());
+                pstn_update.setString(5, accountTable.getStatus());
+                pstn_update.setString(6, accountTable.getType());
+                pstn_update.setString(7, accountTable.getHashId());
+
+                pstn_update.setInt(8, accountTable.getOid());
+
+                pstn_update.executeUpdate();
+
+            } else {
+
+            }
+
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            conn.commit();
+        }
     }
 
     @Override
@@ -239,7 +266,7 @@ public class AccountTableControl implements TableControl {
                 account.setName(resultSet.getString("ACC_NAME"));
                 account.setStatus(resultSet.getString("ACC_STS"));
                 account.setType(resultSet.getString("ACC_TYPE"));
-                account.setValue(resultSet.getInt("ACC_VALUE"));
+                account.setValue(resultSet.getDouble("ACC_VALUE"));
                 account.setTotalExpense(resultSet.getInt("ACC_TOTAL_EXPENSE"));
                 account.setTotalIncome(resultSet.getInt("ACC_TOTAL_INCOME"));
                 account.setHashId(resultSet.getString("ACC_HASH_ID"));
