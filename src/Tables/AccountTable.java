@@ -21,6 +21,9 @@ public class AccountTable implements TableModel {
     private String name;
     private String status;
     private String type;
+    private int day;
+    private int month;
+    private int year;
     private String hashId;
 
     public AccountTable(int oid, String name, double value, String status, double totalExpense, double totalIncome, String type, String hashId) {
@@ -95,6 +98,30 @@ public class AccountTable implements TableModel {
 
     public String getHashId() {
         return hashId;
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public void setDay(int day) {
+        this.day = day;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
     }
 
     public void setHashId(String hashId) {

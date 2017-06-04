@@ -134,6 +134,27 @@ public class ModelControl {
 
         if (classObject instanceof CategoryTable) {
             tableModelList = categoryTblCtrl.select();
+        } else if (classObject instanceof ExpenseTable) {
+            ExpenseTable ex = (ExpenseTable) classObject;
+            tableModelList = expenseTblCtrl.selectByMonth(ex.getMonth());
+        } else {
+            throw new SQLException("Unknow object " + clazz);
+        }
+
+        return tableModelList;
+    }
+
+    public static List<TableModel> selectWithParam(Class clazz, Object id) throws SQLException {
+        List<TableModel> tableModelList = new ArrayList();
+        Object classObject = null;
+        try {
+            classObject = clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException ex) {
+            throw new SQLException("Object class instance requires default constructor or static inner class", ex);
+        }
+
+        if (classObject instanceof ExpenseTable) {
+            tableModelList = expenseTblCtrl.selectByMonth((Integer) id);
         } else {
             throw new SQLException("Unknow object " + clazz);
         }

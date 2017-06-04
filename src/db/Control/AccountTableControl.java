@@ -33,6 +33,9 @@ public class AccountTableControl implements TableControl {
                 + "  ACC_NAME VARCHAR(256) NOT NULL,   " //Itau, carteira, etc
                 + "  ACC_STS VARCHAR(128) NOT NULL,  "
                 + "  ACC_TYPE VARCHAR(256) NOT NULL,  " // Poupanca, corrente, salario
+                + "  ACC_DAY INT NOT NULL,  "
+                + "  ACC_MONTH INT NOT NULL,  "
+                + "  ACC_YEAR INT NOT NULL,  "
                 + "  ACC_HASH_ID VARCHAR(256) NOT NULL, "// -- hash ('CA_NAME'+'CA_VARIANT') //Ex. ITAU + Corrente
                 + "  CONSTRAINT ACC_PK_OID PRIMARY KEY (ACC_OID),  "
                 + "  CONSTRAINT ACC_UC_HASH_ID UNIQUE (ACC_HASH_ID)) ";
@@ -47,8 +50,11 @@ public class AccountTableControl implements TableControl {
                 + "   ACC_NAME, "
                 + "   ACC_STS, "
                 + "   ACC_TYPE,"
+                + "   ACC_DAY,"
+                + "   ACC_MONTH,"
+                + "   ACC_YEAR,"
                 + "   ACC_HASH_ID ) "
-                + "  values (?, ?, ?, ?, ?, ?, ?) ";
+                + "  values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
 
         protected static final String SQL_DELETE = "delete from " + ACCOUNT_TABLE + " where ACC_OID = ?";
 
@@ -60,6 +66,9 @@ public class AccountTableControl implements TableControl {
                 + "  t.ACC_NAME as ACC_NAME, "
                 + "  t.ACC_STS as ACC_STS, "
                 + "  t.ACC_TYPE as ACC_TYPE, "
+                + "  t.ACC_DAY as ACC_DAY, "
+                + "  t.ACC_MONTH as ACC_MONTH, "
+                + "  t.ACC_YEAR as ACC_YEAR, "
                 + "  t.ACC_HASH_ID as ACC_HASH_ID "
                 + " from " + ACCOUNT_TABLE + " as t "
                 + " where t.ACC_OID=? ";
@@ -73,6 +82,9 @@ public class AccountTableControl implements TableControl {
                 + "  t.ACC_NAME as ACC_NAME, "
                 + "  t.ACC_STS as ACC_STS, "
                 + "  t.ACC_TYPE as ACC_TYPE, "
+                + "  t.ACC_DAY as ACC_DAY, "
+                + "  t.ACC_MONTH as ACC_MONTH, "
+                + "  t.ACC_YEAR as ACC_YEAR, "
                 + "  t.ACC_HASH_ID as ACC_HASH_ID "
                 + " from " + ACCOUNT_TABLE + " as t";
 
@@ -85,6 +97,9 @@ public class AccountTableControl implements TableControl {
                 + "   t.ACC_NAME = ?, "
                 + "   t.ACC_STS = ?, "
                 + "   t.ACC_TYPE = ?, "
+                + "   t.ACC_DAY = ?, "
+                + "   t.ACC_MONTH = ?, "
+                + "   t.ACC_YEAR = ?, "
                 + "   t.ACC_HASH_ID = ? "
                 + "  where t.ACC_OID = ? ";
 
@@ -156,17 +171,20 @@ public class AccountTableControl implements TableControl {
         try {
             if (tableModel instanceof AccountTable) {
 
-                AccountTable testeTable = (AccountTable) tableModel;
+                AccountTable accTable = (AccountTable) tableModel;
 
-                testeTable.computeHash();
+                accTable.computeHash();
 
-                pstn_insert.setDouble(1, testeTable.getValue());
-                pstn_insert.setDouble(2, testeTable.getTotalExpense());
-                pstn_insert.setDouble(3, testeTable.getTotalIncome());
-                pstn_insert.setString(4, testeTable.getName());
-                pstn_insert.setString(5, testeTable.getStatus());
-                pstn_insert.setString(6, testeTable.getType());
-                pstn_insert.setString(7, testeTable.getHashId());
+                pstn_insert.setDouble(1, accTable.getValue());
+                pstn_insert.setDouble(2, accTable.getTotalExpense());
+                pstn_insert.setDouble(3, accTable.getTotalIncome());
+                pstn_insert.setString(4, accTable.getName());
+                pstn_insert.setString(5, accTable.getStatus());
+                pstn_insert.setString(6, accTable.getType());
+                pstn_insert.setInt(7, accTable.getDay());
+                pstn_insert.setInt(8, accTable.getMonth());
+                pstn_insert.setInt(9, accTable.getYear());
+                pstn_insert.setString(10, accTable.getHashId());
 
                 pstn_insert.executeUpdate();
 
@@ -174,7 +192,7 @@ public class AccountTableControl implements TableControl {
 
                 if (resultSet.next()) {
                     int id = resultSet.getInt(1);
-                    testeTable.setOid(id);
+                    accTable.setOid(id);
                 }
             }
 
@@ -228,9 +246,12 @@ public class AccountTableControl implements TableControl {
                 pstn_update.setString(4, accountTable.getName());
                 pstn_update.setString(5, accountTable.getStatus());
                 pstn_update.setString(6, accountTable.getType());
-                pstn_update.setString(7, accountTable.getHashId());
+                pstn_update.setInt(7, accountTable.getDay());
+                pstn_update.setInt(8, accountTable.getMonth());
+                pstn_update.setInt(9, accountTable.getYear());
+                pstn_update.setString(10, accountTable.getHashId());
 
-                pstn_update.setInt(8, accountTable.getOid());
+                pstn_update.setInt(11, accountTable.getOid());
 
                 pstn_update.executeUpdate();
 
@@ -266,6 +287,9 @@ public class AccountTableControl implements TableControl {
                 account.setName(resultSet.getString("ACC_NAME"));
                 account.setStatus(resultSet.getString("ACC_STS"));
                 account.setType(resultSet.getString("ACC_TYPE"));
+                account.setDay(resultSet.getInt("ACC_DAY"));
+                account.setMonth(resultSet.getInt("ACC_MONTH"));
+                account.setYear(resultSet.getInt("ACC_YEAR"));
                 account.setValue(resultSet.getDouble("ACC_VALUE"));
                 account.setTotalExpense(resultSet.getInt("ACC_TOTAL_EXPENSE"));
                 account.setTotalIncome(resultSet.getInt("ACC_TOTAL_INCOME"));

@@ -12,6 +12,7 @@ import cashFlow.Listeners.ValuesChangeEvent;
 import db.Control.ModelControl;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.DefaultFormatterFactory;
@@ -162,6 +163,10 @@ public class AddAccountScreen extends javax.swing.JFrame implements ValuesChange
 
         accountTable.setTotalExpense(0);
         accountTable.setTotalIncome(0);
+
+        accountTable.setDay(LocalDate.now().getDayOfMonth());
+        accountTable.setMonth(LocalDate.now().getMonthValue());
+        accountTable.setYear(LocalDate.now().getYear());
 
         try {
             ModelControl.save(accountTable);

@@ -23,6 +23,10 @@ public interface CashFlowInfo {
         MAXNUM
     }
 
+    public static final String[] ExpColumns = new String[]{
+        "Data", "Descrição", "Valor", "Categoria", "Conta"
+    };
+
     public static final String[][] Categories = new String[][]{
         {"Remuneração", "INCOME", ""},
         {"Moradia", "EXPENSE", ""},

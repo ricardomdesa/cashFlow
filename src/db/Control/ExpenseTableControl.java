@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -88,6 +89,22 @@ public class ExpenseTableControl implements TableControl {
                 + "  t.EXP_HASH_ID as EXP_HASH_ID "
                 + " from " + EXPENSE_TABLE + " as t";
 
+        protected static final String SQL_SELECT_BY_MONTH
+                = " select "
+                + "  t.EXP_OID as EXP_OID, "
+                + "  t.EXP_ACC_OID as EXP_ACC_OID, "
+                + "  t.EXP_VALUE as EXP_VALUE, "
+                + "  t.EXP_PAYED as EXP_PAYED, "
+                + "  t.EXP_REPEAT as EXP_REPEAT, "
+                + "  t.EXP_DESCRIPTION as EXP_DESCRIPTION, "
+                + "  t.EXP_CATEGORY_ID as EXP_CATEGORY_ID, "
+                + "  t.EXP_DAY as EXP_DAY, "
+                + "  t.EXP_MONTH as EXP_MONTH, "
+                + "  t.EXP_YEAR as EXP_YEAR, "
+                + "  t.EXP_HASH_ID as EXP_HASH_ID "
+                + " from " + EXPENSE_TABLE + " as t"
+                + " where t.EXP_MONTH=?";
+
         protected static final String SQL_UPDATE
                 = " update " + EXPENSE_TABLE + " as t "
                 + "  set "
@@ -109,6 +126,7 @@ public class ExpenseTableControl implements TableControl {
     protected PreparedStatement pstn_delete;
     protected PreparedStatement pstn_load;
     protected PreparedStatement pstn_select;
+    protected PreparedStatement pstn_selectByMonth;
     protected PreparedStatement pstn_update;
 
     public ExpenseTableControl() {
@@ -127,6 +145,7 @@ public class ExpenseTableControl implements TableControl {
         pstn_delete = conn.prepareStatement(ExpenseTableControl.Config.SQL_DELETE);
         pstn_load = conn.prepareStatement(ExpenseTableControl.Config.SQL_LOAD);
         pstn_select = conn.prepareStatement(ExpenseTableControl.Config.SQL_SELECT);
+        pstn_selectByMonth = conn.prepareStatement(ExpenseTableControl.Config.SQL_SELECT_BY_MONTH);
         pstn_update = conn.prepareStatement(ExpenseTableControl.Config.SQL_UPDATE);
     }
 
@@ -275,6 +294,43 @@ public class ExpenseTableControl implements TableControl {
     @Override
     public List<TableModel> select() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public List<TableModel> selectByMonth(int month) throws SQLException {
+        List<TableModel> list = new ArrayList();
+        ResultSet resultSet = null;
+
+        try {
+            pstn_selectByMonth.setInt(1, month);
+            resultSet = pstn_selectByMonth.executeQuery();
+
+            while (resultSet.next()) {
+
+                ExpenseTable table = new ExpenseTable();
+
+                table.setOid(resultSet.getInt("EXP_OID"));
+                table.setDescription(resultSet.getString("EXP_DESCRIPTION"));
+                table.setCategory(resultSet.getInt("EXP_CATEGORY_ID"));
+                table.setDay(resultSet.getInt("EXP_DAY"));
+                table.setMonth(month);
+                table.setYear(resultSet.getInt("EXP_YEAR"));
+                table.setValue(resultSet.getDouble("EXP_VALUE"));
+                table.setPayed(resultSet.getBoolean("EXP_PAYED"));
+                table.setRepeat(resultSet.getBoolean("EXP_REPEAT"));
+                table.setHashId(resultSet.getString("EXP_HASH_ID"));
+
+                list.add((TableModel) table);
+            }
+
+        } catch (SQLException ex) {
+            throw ex;
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        }
+
+        return list;
     }
 
 }

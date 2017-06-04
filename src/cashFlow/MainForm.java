@@ -11,6 +11,7 @@ import Tables.ExpenseTable;
 import Tables.IncomeTable;
 import cashFlow.GUI.AddAccountScreen;
 import cashFlow.GUI.AddScreen;
+import cashFlow.GUI.StatementsScreen;
 import cashFlow.Listeners.ValuesChangeAction;
 import cashFlow.Listeners.ValuesChangeEvent;
 import db.Control.ModelControl;
@@ -132,21 +133,18 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panelLayout.createSequentialGroup()
                         .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel2)
-                                .addGroup(panelLayout.createSequentialGroup()
-                                    .addComponent(jLabel3)
-                                    .addGap(138, 138, 138)
-                                    .addComponent(accValueLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGroup(panelLayout.createSequentialGroup()
-                                    .addComponent(jLabel5)
-                                    .addGap(122, 122, 122)
-                                    .addComponent(accTotExpenseLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(panelLayout.createSequentialGroup()
+                            .addComponent(jLabel2)
+                            .addComponent(accountNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panelLayout.createSequentialGroup()
+                                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel4)
-                                    .addGap(122, 122, 122)
-                                    .addComponent(accTotIncomeLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(accountNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel3))
+                                .addGap(113, 113, 113)
+                                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(accValueLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(accTotExpenseLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(accTotIncomeLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -203,7 +201,8 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
 
     private void accTotExpenseLblMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accTotExpenseLblMouseReleased
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(rootPane, "expenses");
+        StatementsScreen screen = new StatementsScreen();
+        screen.setVisible(true);
     }//GEN-LAST:event_accTotExpenseLblMouseReleased
 
     /**
@@ -313,7 +312,6 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
         } catch (SQLException ex) {
             Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     private boolean isThereAccount() {
@@ -353,8 +351,7 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
         setIconImage(Toolkit.getDefaultToolkit().getImage("LOCK.png"));
         new ModelControl();
         addScreen.setPanelToChange(this);
-        HideToSystemTray hide = new HideToSystemTray();
-        hide.HideToSystemTraya(this);
+
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
