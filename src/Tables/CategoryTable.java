@@ -67,7 +67,7 @@ public class CategoryTable implements TableModel {
         String nameTmp = category;
 
         StringBuilder builder = new StringBuilder();
-        builder.append(nameTmp);
+        builder.append(nameTmp).append(type);
 
         String hash = builder.toString();
 
@@ -82,6 +82,33 @@ public class CategoryTable implements TableModel {
         hash = 37 * hash + Objects.hashCode(this.color);
         hash = 37 * hash + Objects.hashCode(this.type);
         return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CategoryTable other = (CategoryTable) obj;
+        if (this.oid != other.oid) {
+            return false;
+        }
+        if (!Objects.equals(this.category, other.category)) {
+            return false;
+        }
+        if (!Objects.equals(this.type, other.type)) {
+            return false;
+        }
+        if (!Objects.equals(this.color, other.color)) {
+            return false;
+        }
+        return true;
     }
 
 }

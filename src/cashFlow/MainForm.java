@@ -5,9 +5,13 @@
  */
 package cashFlow;
 
-import cashFlow.GUI.AddScreen;
-import cashFlow.GUI.AddAccountScreen;
 import Tables.AccountTable;
+import Tables.CashFlowInfo;
+import Tables.ExpenseTable;
+import Tables.IncomeTable;
+import cashFlow.GUI.AddAccountScreen;
+import cashFlow.GUI.AddScreen;
+import cashFlow.Listeners.ValuesChangeAction;
 import cashFlow.Listeners.ValuesChangeEvent;
 import db.Control.ModelControl;
 import java.awt.SystemTray;
@@ -16,6 +20,7 @@ import java.awt.TrayIcon;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -26,27 +31,20 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
     TrayIcon trayIcon;
     SystemTray tray;
     AccountTable mainAccount = null;
-    AddAccountScreen acc = new AddAccountScreen();
+    AddScreen addScreen = new AddScreen();
+    AddAccountScreen addAccountScreen = new AddAccountScreen();
 
     /**
      * Creates new form main
      */
     public MainForm() {
 
-        super("SystemTray test");
+        super("CashFlow");
 
         initComponents();
-        setIconImage(Toolkit.getDefaultToolkit().getImage("LOCK.png"));
 
-        ModelControl control = new ModelControl();
+        configScreenItens();
 
-        HideToSystemTray hide = new HideToSystemTray();
-        hide.HideToSystemTraya(this);
-
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-        setOverviewValues();
     }
 
     /**
@@ -66,8 +64,8 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         accValueLbl = new javax.swing.JLabel();
-        accTotExpenseLbl = new javax.swing.JLabel();
         accTotIncomeLbl = new javax.swing.JLabel();
+        accTotExpenseLbl = new javax.swing.JLabel();
         accountNameLbl = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -82,7 +80,7 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
         });
 
         jLabel1.setFont(new java.awt.Font("Lucida Console", 1, 18)); // NOI18N
-        jLabel1.setText("Cash Flow - Controle Financeiro");
+        jLabel1.setText("Cash Flow");
 
         jLabel2.setFont(new java.awt.Font("Lucida Console", 1, 14)); // NOI18N
         jLabel2.setText("Visão geral");
@@ -91,7 +89,7 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
         jLabel3.setText("Contas");
 
         jLabel4.setFont(new java.awt.Font("Lucida Console", 1, 12)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(51, 204, 0));
+        jLabel4.setForeground(new java.awt.Color(0, 153, 0));
         jLabel4.setText("Receitas");
 
         jLabel5.setFont(new java.awt.Font("Lucida Console", 1, 12)); // NOI18N
@@ -101,13 +99,23 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
         accValueLbl.setFont(new java.awt.Font("Lucida Console", 0, 11)); // NOI18N
         accValueLbl.setText("R$ ");
 
-        accTotExpenseLbl.setFont(new java.awt.Font("Lucida Console", 0, 11)); // NOI18N
-        accTotExpenseLbl.setForeground(new java.awt.Color(51, 204, 0));
-        accTotExpenseLbl.setText("R$ ");
-
-        accTotIncomeLbl.setFont(new java.awt.Font("Lucida Console", 0, 11)); // NOI18N
-        accTotIncomeLbl.setForeground(new java.awt.Color(255, 0, 0));
+        accTotIncomeLbl.setFont(new java.awt.Font("Lucida Console", 1, 11)); // NOI18N
+        accTotIncomeLbl.setForeground(new java.awt.Color(0, 153, 0));
         accTotIncomeLbl.setText("R$ ");
+        accTotIncomeLbl.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                accTotIncomeLblMouseReleased(evt);
+            }
+        });
+
+        accTotExpenseLbl.setFont(new java.awt.Font("Lucida Console", 1, 11)); // NOI18N
+        accTotExpenseLbl.setForeground(new java.awt.Color(255, 0, 0));
+        accTotExpenseLbl.setText("R$ ");
+        accTotExpenseLbl.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                accTotExpenseLblMouseReleased(evt);
+            }
+        });
 
         accountNameLbl.setText(".");
 
@@ -133,11 +141,11 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
                                 .addGroup(panelLayout.createSequentialGroup()
                                     .addComponent(jLabel5)
                                     .addGap(122, 122, 122)
-                                    .addComponent(accTotIncomeLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(accTotExpenseLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGroup(panelLayout.createSequentialGroup()
                                     .addComponent(jLabel4)
                                     .addGap(122, 122, 122)
-                                    .addComponent(accTotExpenseLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(accTotIncomeLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addComponent(accountNameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -158,11 +166,11 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
                 .addGap(13, 13, 13)
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(accTotExpenseLbl))
+                    .addComponent(accTotIncomeLbl))
                 .addGap(12, 12, 12)
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
-                    .addComponent(accTotIncomeLbl))
+                    .addComponent(accTotExpenseLbl))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
                 .addComponent(addButton)
                 .addGap(20, 20, 20))
@@ -184,8 +192,19 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         // TODO add your handling code here:
-        new AddScreen().setVisible(true);
+        addScreen.setAccount(mainAccount);
+        addScreen.setVisible(true);
     }//GEN-LAST:event_addButtonActionPerformed
+
+    private void accTotIncomeLblMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accTotIncomeLblMouseReleased
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(rootPane, "incomes");
+    }//GEN-LAST:event_accTotIncomeLblMouseReleased
+
+    private void accTotExpenseLblMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_accTotExpenseLblMouseReleased
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(rootPane, "expenses");
+    }//GEN-LAST:event_accTotExpenseLblMouseReleased
 
     /**
      * @param args the command line arguments
@@ -198,7 +217,7 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -219,6 +238,7 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new MainForm().setVisible(true);
+
             }
         });
     }
@@ -237,16 +257,63 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
     private javax.swing.JPanel panel;
     // End of variables declaration//GEN-END:variables
 
-    private void setOverviewValues() {
+    private void UpdateOverviewValues(CashFlowInfo.addScreenOp operation) {
 
-        if (isThereAccount()) {
-            accountNameLbl.setText(mainAccount.getName());
-            accValueLbl.setText("R$ " + String.valueOf(mainAccount.getValue()));
-        } else {
+        switch (operation) {
+            case ACCOUNT:
+                if (isThereAccount()) {
+                    accountNameLbl.setText(mainAccount.getName());
+                } else {
+                    new AddAccountScreen().setVisible(true);
+                }
+                break;
 
-            acc.setPanelToChange(this);
-            acc.setVisible(true);
+            case EXPENSE:
+                ExpenseTable exp = new ExpenseTable();
+
+                try {
+                    exp = (ExpenseTable) ModelControl.load(ExpenseTable.class, 1);
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                Double expValue = exp.getValue();
+                mainAccount.setValue(mainAccount.getValue() - expValue);
+                mainAccount.setTotalExpense(mainAccount.getTotalExpense() + expValue);
+
+                break;
+            case INCOME:
+                IncomeTable inc = new IncomeTable();
+
+                try {
+                    inc = (IncomeTable) ModelControl.load(IncomeTable.class, 1);
+                } catch (SQLException ex) {
+                    Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                Double incValue = inc.getValue();
+                mainAccount.setValue(mainAccount.getValue() + incValue);
+                mainAccount.setTotalIncome(mainAccount.getTotalIncome() + incValue);
+
+                break;
+            default:
+                break;
+
         }
+
+        if (mainAccount.getValue() >= 0) {
+            mainAccount.setStatus(CashFlowInfo.POSITIVE);
+        } else {
+            mainAccount.setStatus(CashFlowInfo.NEGATIVE);
+        }
+        accValueLbl.setText("R$ " + String.valueOf(mainAccount.getValue()));
+        accTotExpenseLbl.setText("R$ " + String.valueOf(mainAccount.getTotalExpense()));
+        accTotIncomeLbl.setText("R$ " + String.valueOf(mainAccount.getTotalIncome()));
+
+        try {
+            ModelControl.update(mainAccount);
+        } catch (SQLException ex) {
+            Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     private boolean isThereAccount() {
@@ -256,18 +323,50 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
         } catch (SQLException ex) {
             Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (mainAccount == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return mainAccount != null;
     }
 
     @Override
-    public void setValuesChanged() {
+    public void setValuesChanged(ValuesChangeAction panel) {
 
-        setOverviewValues();
+        if (panel instanceof javax.swing.JFrame) {
+            String childName = panel.getClass().getSimpleName();
+            switch (childName) {
+                case "AddAccountScreen":
+                    UpdateOverviewValues(CashFlowInfo.addScreenOp.ACCOUNT);
+                    break;
+                case "AddExpenseScreen":
+                    UpdateOverviewValues(CashFlowInfo.addScreenOp.EXPENSE);
+                    break;
+                case "AddIncomeScreen":
+                    UpdateOverviewValues(CashFlowInfo.addScreenOp.INCOME);
+                    break;
+                default:
+                    break;
 
+            }
+        }
+
+    }
+
+    private void configScreenItens() {
+        setIconImage(Toolkit.getDefaultToolkit().getImage("LOCK.png"));
+        new ModelControl();
+        addScreen.setPanelToChange(this);
+        HideToSystemTray hide = new HideToSystemTray();
+        hide.HideToSystemTraya(this);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        accTotIncomeLbl.setToolTipText("Click aqui para ver as movimentações!");
+        accTotExpenseLbl.setToolTipText("Click aqui para ver as movimentações!");
+
+        if (!isThereAccount()) {
+            addAccountScreen.setPanelToChange(this);
+            addAccountScreen.setVisible(true);
+        } else {
+            UpdateOverviewValues(CashFlowInfo.addScreenOp.ACCOUNT);
+        }
     }
 
 }

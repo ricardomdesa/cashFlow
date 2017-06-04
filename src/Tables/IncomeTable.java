@@ -6,14 +6,13 @@
 package Tables;
 
 import db.tableInterfaces.TableModel;
-import java.time.LocalDate;
 import java.util.Objects;
 
 /**
  *
  * @author f98877a
  */
-public class ExpenseTable implements TableModel {
+public class IncomeTable implements TableModel {
 
     private int oid;
     private int accOid;
@@ -23,14 +22,14 @@ public class ExpenseTable implements TableModel {
     private int day;
     private int month;
     private int year;
-    private boolean payed;
+    private boolean received;
     private boolean repeat;
     private String hashId;
 
-    public ExpenseTable() {
+    public IncomeTable() {
     }
 
-    public ExpenseTable(int id, String description, double value, int category, int day, int month, int year, boolean payed, boolean repeat, String hashId) {
+    public IncomeTable(int id, String description, double value, int category, int day, int month, int year, boolean received, boolean repeat, String hashId) {
         this.oid = id;
         this.description = description;
         this.value = value;
@@ -38,7 +37,7 @@ public class ExpenseTable implements TableModel {
         this.day = day;
         this.month = month;
         this.year = year;
-        this.payed = payed;
+        this.received = received;
         this.repeat = repeat;
         this.hashId = hashId;
     }
@@ -107,12 +106,12 @@ public class ExpenseTable implements TableModel {
         this.year = year;
     }
 
-    public boolean isPayed() {
-        return payed;
+    public boolean isReceived() {
+        return received;
     }
 
-    public void setPayed(boolean payed) {
-        this.payed = payed;
+    public void setReceived(boolean received) {
+        this.received = received;
     }
 
     public boolean isRepeat() {
@@ -150,7 +149,6 @@ public class ExpenseTable implements TableModel {
         hash = 37 * hash + Objects.hashCode(this.category);
         hash = 37 * hash + Objects.hashCode(this.description);
         hash = 37 * hash + Objects.hashCode(this.day);
-        hash = 37 * hash + Objects.hashCode(LocalDate.now().toString());
         return hash;
     }
 
@@ -165,7 +163,7 @@ public class ExpenseTable implements TableModel {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ExpenseTable other = (ExpenseTable) obj;
+        final IncomeTable other = (IncomeTable) obj;
         if (this.oid != other.oid) {
             return false;
         }

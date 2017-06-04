@@ -8,7 +8,7 @@ package cashFlow.GUI;
 import Tables.AccountTable;
 import Tables.CashFlowInfo;
 import Tables.CategoryTable;
-import Tables.ExpenseTable;
+import Tables.IncomeTable;
 import cashFlow.Listeners.ValuesChangeAction;
 import cashFlow.Listeners.ValuesChangeEvent;
 import db.Control.ModelControl;
@@ -32,7 +32,7 @@ import javax.swing.text.NumberFormatter;
  *
  * @author f98877a
  */
-public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChangeAction {
+public class AddIncomeScreen extends javax.swing.JFrame implements ValuesChangeAction {
 
     private List<TableModel> cat = new ArrayList();
     private AccountTable account;
@@ -41,7 +41,7 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
     /**
      * Creates new form AddExpenseScreen
      */
-    public AddExpenseScreen() {
+    public AddIncomeScreen() {
         this.account = null;
         initComponents();
         setCategoryList();
@@ -70,15 +70,15 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        expDescriptionTfd = new javax.swing.JTextField();
-        expCategoryCbx = new javax.swing.JComboBox();
-        expPayedRBtn = new javax.swing.JRadioButton();
-        expRepeatRBtn = new javax.swing.JRadioButton();
-        expSaveBtn = new javax.swing.JButton();
+        incDescriptionTfd = new javax.swing.JTextField();
+        incCategoryCbx = new javax.swing.JComboBox();
+        incReceivedRBtn = new javax.swing.JRadioButton();
+        incRepeatRBtn = new javax.swing.JRadioButton();
+        incSaveBtn = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        expDateTfd = new javax.swing.JFormattedTextField();
-        expValueTfd = new javax.swing.JFormattedTextField();
+        incDateTfd = new javax.swing.JFormattedTextField();
+        incValueTfd = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -88,14 +88,14 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
 
         jLabel3.setText("Categoria");
 
-        expPayedRBtn.setText("Pago?");
+        incReceivedRBtn.setText("Recebido?");
 
-        expRepeatRBtn.setText("Repetir?");
+        incRepeatRBtn.setText("Repetir?");
 
-        expSaveBtn.setText("Salvar");
-        expSaveBtn.addActionListener(new java.awt.event.ActionListener() {
+        incSaveBtn.setText("Salvar");
+        incSaveBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                expSaveBtnActionPerformed(evt);
+                incSaveBtnActionPerformed(evt);
             }
         });
 
@@ -103,11 +103,11 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
 
         jLabel5.setText("Data");
 
-        expDateTfd.setColumns(3);
-        expDateTfd.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT))));
-        expDateTfd.setToolTipText("");
+        incDateTfd.setColumns(3);
+        incDateTfd.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT))));
+        incDateTfd.setToolTipText("");
 
-        expValueTfd.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(java.text.NumberFormat.getCurrencyInstance())));
+        incValueTfd.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(java.text.NumberFormat.getCurrencyInstance())));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -116,15 +116,15 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(96, 302, Short.MAX_VALUE)
+                        .addGap(96, 292, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(expPayedRBtn)
-                            .addComponent(expRepeatRBtn)))
+                            .addComponent(incReceivedRBtn)
+                            .addComponent(incRepeatRBtn)))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(expSaveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(incSaveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(layout.createSequentialGroup()
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel1)
@@ -133,16 +133,16 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
                                     .addGap(50, 50, 50)
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(expDescriptionTfd)
-                                            .addComponent(expCategoryCbx, 0, 256, Short.MAX_VALUE))
+                                            .addComponent(incDescriptionTfd)
+                                            .addComponent(incCategoryCbx, 0, 256, Short.MAX_VALUE))
                                         .addGroup(layout.createSequentialGroup()
                                             .addComponent(jLabel4)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                            .addComponent(expValueTfd, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                            .addComponent(incValueTfd, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(expDateTfd, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(incDateTfd, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -152,48 +152,48 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
                 .addGap(37, 37, 37)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(expDescriptionTfd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(incDescriptionTfd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jLabel4)
-                    .addComponent(expValueTfd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(incValueTfd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(expCategoryCbx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(incCategoryCbx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(expDateTfd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(incDateTfd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(19, 19, 19)
-                .addComponent(expPayedRBtn)
+                .addComponent(incReceivedRBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(expRepeatRBtn)
+                .addComponent(incRepeatRBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(expSaveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(incSaveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void expSaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expSaveBtnActionPerformed
+    private void incSaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_incSaveBtnActionPerformed
 
         // TODO add your handling code here:
         getAndSaveValues();
         vc.setValuesChanged(this);
         this.dispose();
-    }//GEN-LAST:event_expSaveBtnActionPerformed
+    }//GEN-LAST:event_incSaveBtnActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox expCategoryCbx;
-    private javax.swing.JFormattedTextField expDateTfd;
-    private javax.swing.JTextField expDescriptionTfd;
-    private javax.swing.JRadioButton expPayedRBtn;
-    private javax.swing.JRadioButton expRepeatRBtn;
-    private javax.swing.JButton expSaveBtn;
-    private javax.swing.JFormattedTextField expValueTfd;
+    private javax.swing.JComboBox incCategoryCbx;
+    private javax.swing.JFormattedTextField incDateTfd;
+    private javax.swing.JTextField incDescriptionTfd;
+    private javax.swing.JRadioButton incReceivedRBtn;
+    private javax.swing.JRadioButton incRepeatRBtn;
+    private javax.swing.JButton incSaveBtn;
+    private javax.swing.JFormattedTextField incValueTfd;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -207,77 +207,77 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
         try {
             cat = ModelControl.select(CategoryTable.class);
         } catch (SQLException ex) {
-            Logger.getLogger(AddExpenseScreen.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AddIncomeScreen.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        expCategoryCbx.removeAllItems();
+        incCategoryCbx.removeAllItems();
         for (TableModel cat1 : cat) {
             CategoryTable categ = (CategoryTable) cat1;
 
-            if (categ.getType().equals(CashFlowInfo.CATEGORY_TYPE_OUT)) {
-                expCategoryCbx.addItem(categ);
+            if (categ.getType().equals(CashFlowInfo.CATEGORY_TYPE_IN)) {
+                incCategoryCbx.addItem(categ);
             }
         }
-        expCategoryCbx.setRenderer(new CategoryListRenderer());
+        incCategoryCbx.setRenderer(new CategoryListRenderer());
     }
 
     private void configScreenItens() {
 
         //payed check
-        expPayedRBtn.setSelected(true);
+        incReceivedRBtn.setSelected(true);
 
         //Value in currency
         DecimalFormat dFormat = new DecimalFormat("#,###,###.00");
         NumberFormatter pAmount = new NumberFormatter(dFormat);
         pAmount.setAllowsInvalid(false);
-        expValueTfd.setFormatterFactory(new DefaultFormatterFactory(pAmount));
+        incValueTfd.setFormatterFactory(new DefaultFormatterFactory(pAmount));
 
         //Date
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         DateFormatter d = new DateFormatter(dateFormat);
-        expDateTfd.setFormatterFactory(new DefaultFormatterFactory(d));
-        expDateTfd.setValue(new java.util.Date());
+        incDateTfd.setFormatterFactory(new DefaultFormatterFactory(d));
+        incDateTfd.setValue(new java.util.Date());
 
     }
 
     private void getAndSaveValues() {
 
-        ExpenseTable expenseTable = new ExpenseTable();
+        IncomeTable incomeTable = new IncomeTable();
 
         //Date values
-        String date = expDateTfd.getText();
+        String date = incDateTfd.getText();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate parse = LocalDate.parse(date, dateFormatter);
-        expenseTable.setDay(parse.getDayOfMonth());
-        expenseTable.setMonth(parse.getMonthValue());
-        expenseTable.setYear(parse.getYear());
+        incomeTable.setDay(parse.getDayOfMonth());
+        incomeTable.setMonth(parse.getMonthValue());
+        incomeTable.setYear(parse.getYear());
 
         //Description
-        if (!"".equals(expDescriptionTfd.getText())) {
-            expenseTable.setDescription(expDescriptionTfd.getText());
+        if (!"".equals(incDescriptionTfd.getText())) {
+            incomeTable.setDescription(incDescriptionTfd.getText());
         } else {
             JOptionPane.showMessageDialog(this, "Preencha a descrição");
         }
 
         //Category
-        expenseTable.setCategory(((CategoryTable) expCategoryCbx.getSelectedItem()).getOid());
+        incomeTable.setCategory(((CategoryTable) incCategoryCbx.getSelectedItem()).getOid());
 
         //Value
-        String value = expValueTfd.getText();
+        String value = incValueTfd.getText();
         value = value.replace(".", "");
         value = value.replace(",", ".");
         Double num = new Double(value);
-        expenseTable.setValue(num);
+        incomeTable.setValue(num);
 
-        expenseTable.setPayed(expPayedRBtn.isSelected());
-        expenseTable.setRepeat(expRepeatRBtn.isSelected());
+        incomeTable.setReceived(incReceivedRBtn.isSelected());
+        incomeTable.setRepeat(incRepeatRBtn.isSelected());
 
-        expenseTable.setAccOid(account.getOid());
+        incomeTable.setAccOid(account.getOid());
 
         try {
-            ModelControl.save(expenseTable);
+            ModelControl.save(incomeTable);
         } catch (SQLException ex) {
-            Logger.getLogger(AddExpenseScreen.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AddIncomeScreen.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

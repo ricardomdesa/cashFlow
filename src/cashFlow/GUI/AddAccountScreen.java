@@ -6,12 +6,16 @@
 package cashFlow.GUI;
 
 import Tables.AccountTable;
+import Tables.CashFlowInfo;
 import cashFlow.Listeners.ValuesChangeAction;
 import cashFlow.Listeners.ValuesChangeEvent;
 import db.Control.ModelControl;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
 
 /**
  *
@@ -26,8 +30,9 @@ public class AddAccountScreen extends javax.swing.JFrame implements ValuesChange
      */
     public AddAccountScreen() {
         initComponents();
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        configScreenItens();
+
     }
 
     /**
@@ -40,27 +45,22 @@ public class AddAccountScreen extends javax.swing.JFrame implements ValuesChange
     private void initComponents() {
 
         accNameTfd = new javax.swing.JTextField();
-        accValueTfd = new javax.swing.JTextField();
         accTypeTfd = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         addAccSaveBtn = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        accValueTfd = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        accNameTfd.setText("Ex. Itau");
         accNameTfd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 accNameTfdActionPerformed(evt);
             }
         });
 
-        accValueTfd.setText("0");
-        accValueTfd.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
-        accValueTfd.setSelectionEnd(10);
-
-        accTypeTfd.setText("Ex. CC, Poupança");
         accTypeTfd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 accTypeTfdActionPerformed(evt);
@@ -80,30 +80,37 @@ public class AddAccountScreen extends javax.swing.JFrame implements ValuesChange
             }
         });
 
+        jLabel4.setText("R$");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(addAccSaveBtn)
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(accNameTfd)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(0, 66, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(accTypeTfd, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(accValueTfd, javax.swing.GroupLayout.Alignment.TRAILING)))))
+                                .addGap(47, 47, 47)
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(accValueTfd, javax.swing.GroupLayout.DEFAULT_SIZE, 89, Short.MAX_VALUE)
+                                .addContainerGap())))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(addAccSaveBtn)))
-                .addContainerGap())
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(accTypeTfd, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -114,8 +121,9 @@ public class AddAccountScreen extends javax.swing.JFrame implements ValuesChange
                     .addComponent(jLabel1))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(accValueTfd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel4)
+                    .addComponent(accValueTfd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(accTypeTfd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -136,15 +144,20 @@ public class AddAccountScreen extends javax.swing.JFrame implements ValuesChange
         // TODO add your handling code here:
 
         AccountTable accountTable = new AccountTable();
-
         accountTable.setName(accNameTfd.getText());
-        accountTable.setValue(Integer.parseInt(accValueTfd.getText()));
+        //Value
+        String value = accValueTfd.getText();
+        value = value.replace(".", "");
+        value = value.replace(",", ".");
+        Double num = new Double(value);
+        accountTable.setValue(num);
+
         accountTable.setType(accTypeTfd.getText());
 
-        if (Integer.parseInt(accValueTfd.getText()) >= 0) {
-            accountTable.setStatus("Positive");
+        if (accountTable.getValue() >= 0) {
+            accountTable.setStatus(CashFlowInfo.POSITIVE);
         } else {
-            accountTable.setStatus("Negative");
+            accountTable.setStatus(CashFlowInfo.NEGATIVE);
         }
 
         accountTable.setTotalExpense(0);
@@ -156,8 +169,9 @@ public class AddAccountScreen extends javax.swing.JFrame implements ValuesChange
         } catch (SQLException ex) {
             Logger.getLogger(AddAccountScreen.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        vc.setValuesChanged(this);
         this.dispose();
-        vc.setValuesChanged();
     }//GEN-LAST:event_addAccSaveBtnActionPerformed
 
     private void accNameTfdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accNameTfdActionPerformed
@@ -167,16 +181,29 @@ public class AddAccountScreen extends javax.swing.JFrame implements ValuesChange
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField accNameTfd;
     private javax.swing.JTextField accTypeTfd;
-    private javax.swing.JTextField accValueTfd;
+    private javax.swing.JFormattedTextField accValueTfd;
     private javax.swing.JButton addAccSaveBtn;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void setPanelToChange(ValuesChangeEvent panel) {
         this.vc = panel;
+    }
+
+    private void configScreenItens() {
+
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        //Value in currency
+        DecimalFormat dFormat = new DecimalFormat("#,###,###.00");
+        NumberFormatter pAmount = new NumberFormatter(dFormat);
+        pAmount.setAllowsInvalid(false);
+        accValueTfd.setFormatterFactory(new DefaultFormatterFactory(pAmount));
     }
 
 }

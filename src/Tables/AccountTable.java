@@ -15,15 +15,15 @@ import java.util.Objects;
 public class AccountTable implements TableModel {
 
     private int oid;
-    private int value;
-    private int totalExpense;
-    private int totalIncome;
+    private double value;
+    private double totalExpense;
+    private double totalIncome;
     private String name;
     private String status;
     private String type;
     private String hashId;
 
-    public AccountTable(int oid, String name, int value, String status, int totalExpense, int totalIncome, String type, String hashId) {
+    public AccountTable(int oid, String name, double value, String status, double totalExpense, double totalIncome, String type, String hashId) {
         this.oid = oid;
         this.name = name;
         this.value = value;
@@ -53,11 +53,11 @@ public class AccountTable implements TableModel {
         this.name = name;
     }
 
-    public int getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(double value) {
         this.value = value;
     }
 
@@ -69,19 +69,19 @@ public class AccountTable implements TableModel {
         this.status = status;
     }
 
-    public int getTotalExpense() {
+    public double getTotalExpense() {
         return totalExpense;
     }
 
-    public void setTotalExpense(int totalExpense) {
+    public void setTotalExpense(double totalExpense) {
         this.totalExpense = totalExpense;
     }
 
-    public int getTotalIncome() {
+    public double getTotalIncome() {
         return totalIncome;
     }
 
-    public void setTotalIncome(int totalIncome) {
+    public void setTotalIncome(double totalIncome) {
         this.totalIncome = totalIncome;
     }
 
@@ -143,6 +143,7 @@ public class AccountTable implements TableModel {
         int hash = 7;
         hash = 37 * hash + Objects.hashCode(this.oid);
         hash = 37 * hash + Objects.hashCode(this.name);
+        hash = 37 * hash + Objects.hashCode(this.value);
         hash = 37 * hash + Objects.hashCode(this.status);
         hash = 37 * hash + Objects.hashCode(this.type);
         return hash;

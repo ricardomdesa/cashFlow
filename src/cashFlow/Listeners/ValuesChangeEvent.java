@@ -11,6 +11,6 @@ package cashFlow.Listeners;
  */
 public interface ValuesChangeEvent {
 
-    void setValuesChanged();
+    void setValuesChanged(ValuesChangeAction panel);
 
 }

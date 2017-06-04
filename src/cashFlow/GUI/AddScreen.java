@@ -5,13 +5,18 @@
  */
 package cashFlow.GUI;
 
-import cashFlow.GUI.AddAccountScreen;
+import Tables.AccountTable;
+import cashFlow.Listeners.ValuesChangeAction;
+import cashFlow.Listeners.ValuesChangeEvent;
 
 /**
  *
  * @author f98877a
  */
-public class AddScreen extends javax.swing.JFrame {
+public class AddScreen extends javax.swing.JFrame implements ValuesChangeAction {
+
+    AccountTable account;
+    private ValuesChangeEvent vc;
 
     /**
      * Creates new form AddScreen
@@ -20,6 +25,14 @@ public class AddScreen extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
+
+    public AccountTable getAccount() {
+        return account;
+    }
+
+    public void setAccount(AccountTable account) {
+        this.account = account;
     }
 
     /**
@@ -88,16 +101,28 @@ public class AddScreen extends javax.swing.JFrame {
 
     private void addExpenseBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addExpenseBtnActionPerformed
         // TODO add your handling code here:
+        AddExpenseScreen addExp = new AddExpenseScreen();
+        addExp.setAccount(account);
+        addExp.setPanelToChange(vc);
+        addExp.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_addExpenseBtnActionPerformed
 
     private void addAccountBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addAccountBtnActionPerformed
         // TODO add your handling code here:
-        new AddAccountScreen().setVisible(true);
-
+        AddAccountScreen acc = new AddAccountScreen();
+        acc.setPanelToChange(vc);
+        acc.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_addAccountBtnActionPerformed
 
     private void addIncomeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addIncomeBtnActionPerformed
         // TODO add your handling code here:
+        AddIncomeScreen incomeScreen = new AddIncomeScreen();
+        incomeScreen.setAccount(account);
+        incomeScreen.setPanelToChange(vc);
+        incomeScreen.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_addIncomeBtnActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -105,4 +130,9 @@ public class AddScreen extends javax.swing.JFrame {
     private javax.swing.JButton addExpenseBtn;
     private javax.swing.JButton addIncomeBtn;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void setPanelToChange(ValuesChangeEvent panel) {
+        this.vc = panel;
+    }
 }

@@ -8,8 +8,6 @@ package Tables;
 import static Tables.CashFlowInfo.Categories;
 import db.Control.ModelControl;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -33,7 +31,7 @@ public class TableFiller {
             try {
                 ModelControl.save(catTable);
             } catch (SQLException ex) {
-                Logger.getLogger(TableFiller.class.getName()).log(Level.SEVERE, null, ex);
+                //ignores error
             }
         }
 
