@@ -6,6 +6,7 @@
 package Tables;
 
 import db.tableInterfaces.TableModel;
+import java.time.LocalTime;
 import java.util.Objects;
 
 /**
@@ -64,12 +65,10 @@ public class CategoryTable implements TableModel {
     }
 
     public void computeHash() {
-        String nameTmp = category;
-
-        StringBuilder builder = new StringBuilder();
-        builder.append(nameTmp).append(type);
-
-        String hash = builder.toString();
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.oid);
+        hash = 37 * hash + Objects.hashCode(this.category);
+        hash = 37 * hash + Objects.hashCode(LocalTime.now().toString());
 
         hashId = Integer.toHexString(Objects.hashCode(hash)).toUpperCase();
     }

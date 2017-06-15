@@ -5,6 +5,14 @@
  */
 package cashFlow.GUI;
 
+import Tables.AccountTable;
+import Tables.ExpenseTable;
+import Tables.IncomeTable;
+import cashFlow.GUI.Renderers.ModifiedListRenderer;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,21 +23,31 @@ import java.util.logging.Logger;
 public class StatementsScreen extends javax.swing.JFrame {
 
     TableView tableView = new TableView();
+    private Month currentMonth;
+    private Object dataType = null;
+    private AccountTable account;
+
+    public Object getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(Object dataType) {
+        this.dataType = dataType;
+    }
+
+    public AccountTable getAccount() {
+        return account;
+    }
+
+    public void setAccount(AccountTable account) {
+        this.account = account;
+    }
 
     /**
      * Creates new form statementsScreen
      */
     public StatementsScreen() {
         initComponents();
-
-        try {
-            tableView.fillExpensesTable(6);
-        } catch (Exception ex) {
-            Logger.getLogger(StatementsScreen.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        mountLayout();
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
     }
 
@@ -45,6 +63,9 @@ public class StatementsScreen extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         stsPanel = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        stsMonthCBx = new javax.swing.JComboBox();
+        stsTypeLbl = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -59,26 +80,45 @@ public class StatementsScreen extends javax.swing.JFrame {
         );
         stsPanelLayout.setVerticalGroup(
             stsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 292, Short.MAX_VALUE)
+            .addGap(0, 336, Short.MAX_VALUE)
         );
+
+        jLabel2.setFont(new java.awt.Font("Lucida Console", 1, 11)); // NOI18N
+        jLabel2.setText("Mês:");
+
+        stsTypeLbl.setFont(new java.awt.Font("Lucida Console", 1, 14)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(stsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addContainerGap(242, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(stsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(stsTypeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 211, Short.MAX_VALUE)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(stsMonthCBx, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
-                .addComponent(stsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2)
+                    .addComponent(stsMonthCBx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(stsTypeLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(stsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -89,7 +129,9 @@ public class StatementsScreen extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -97,8 +139,11 @@ public class StatementsScreen extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JComboBox stsMonthCBx;
     private javax.swing.JPanel stsPanel;
+    private javax.swing.JLabel stsTypeLbl;
     // End of variables declaration//GEN-END:variables
 
     private void mountLayout() {
@@ -126,5 +171,49 @@ public class StatementsScreen extends javax.swing.JFrame {
         pg.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sg);
 
         layout.setHorizontalGroup(pg);
+    }
+
+    public void configScreen() {
+
+        stsMonthCBx.removeAllItems();
+        for (Object e : Month.values()) {
+            stsMonthCBx.addItem((Month) e);
+        }
+        stsMonthCBx.setRenderer(new ModifiedListRenderer());
+        stsMonthCBx.setSelectedItem(LocalDate.now().getMonth());
+        currentMonth = (Month) stsMonthCBx.getSelectedItem();
+
+        stsMonthCBx.addActionListener((ActionEvent e) -> {
+            currentMonth = (Month) stsMonthCBx.getSelectedItem();
+            fillTable();
+        });
+
+        fillTable();
+
+        mountLayout();
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
+
+    private void fillTable() {
+
+        if (dataType != null) {
+            if (dataType instanceof ExpenseTable) {
+                stsTypeLbl.setText("Despesas");
+                stsTypeLbl.setForeground(Color.red);
+                try {
+                    tableView.fillExpensesTable(currentMonth, account.getOid());
+                } catch (Exception ex) {
+                    Logger.getLogger(StatementsScreen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else if (dataType instanceof IncomeTable) {
+                stsTypeLbl.setText("Receitas");
+                stsTypeLbl.setForeground(Color.GREEN);
+                try {
+                    tableView.fillIncomeTable(currentMonth, account.getOid());
+                } catch (Exception ex) {
+                    Logger.getLogger(StatementsScreen.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 }

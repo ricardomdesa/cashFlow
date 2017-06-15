@@ -135,8 +135,9 @@ public class ModelControl {
         if (classObject instanceof CategoryTable) {
             tableModelList = categoryTblCtrl.select();
         } else if (classObject instanceof ExpenseTable) {
-            ExpenseTable ex = (ExpenseTable) classObject;
-            tableModelList = expenseTblCtrl.selectByMonth(ex.getMonth());
+            tableModelList = expenseTblCtrl.select();
+        } else if (classObject instanceof AccountTable) {
+            tableModelList = accountTblCtrl.select();
         } else {
             throw new SQLException("Unknow object " + clazz);
         }
@@ -144,7 +145,7 @@ public class ModelControl {
         return tableModelList;
     }
 
-    public static List<TableModel> selectWithParam(Class clazz, Object id) throws SQLException {
+    public static List<TableModel> selectWithParam(Class clazz, Object id, Object accOid) throws SQLException {
         List<TableModel> tableModelList = new ArrayList();
         Object classObject = null;
         try {
@@ -154,7 +155,9 @@ public class ModelControl {
         }
 
         if (classObject instanceof ExpenseTable) {
-            tableModelList = expenseTblCtrl.selectByMonth((Integer) id);
+            tableModelList = expenseTblCtrl.selectByMonth((Integer) id, (Integer) accOid);
+        } else if (classObject instanceof IncomeTable) {
+            tableModelList = incomeTblCtrl.selectByMonth((Integer) id, (Integer) accOid);
         } else {
             throw new SQLException("Unknow object " + clazz);
         }

@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -88,6 +89,20 @@ public class IncomeTableControl implements TableControl {
                 + "  t.INC_HASH_ID as INC_HASH_ID "
                 + " from " + INCOME_TABLE + " as t";
 
+        protected static final String SQL_SELECT_BY_MONTH
+                = " select "
+                + "  t.INC_OID as INC_OID, "
+                + "  t.INC_VALUE as INC_VALUE, "
+                + "  t.INC_RECEIVED as INC_RECEIVED, "
+                + "  t.INC_REPEAT as INC_REPEAT, "
+                + "  t.INC_DESCRIPTION as INC_DESCRIPTION, "
+                + "  t.INC_CATEGORY_ID as INC_CATEGORY_ID, "
+                + "  t.INC_DAY as INC_DAY, "
+                + "  t.INC_YEAR as INC_YEAR, "
+                + "  t.INC_HASH_ID as INC_HASH_ID "
+                + " from " + INCOME_TABLE + " as t"
+                + " where t.INC_MONTH=? and t.INC_ACC_OID=?";
+
         protected static final String SQL_UPDATE
                 = " update " + INCOME_TABLE + " as t "
                 + "  set "
@@ -109,6 +124,7 @@ public class IncomeTableControl implements TableControl {
     protected PreparedStatement pstn_delete;
     protected PreparedStatement pstn_load;
     protected PreparedStatement pstn_select;
+    protected PreparedStatement pstn_selectByMonth;
     protected PreparedStatement pstn_update;
 
     public IncomeTableControl() {
@@ -127,6 +143,7 @@ public class IncomeTableControl implements TableControl {
         pstn_delete = conn.prepareStatement(IncomeTableControl.Config.SQL_DELETE);
         pstn_load = conn.prepareStatement(IncomeTableControl.Config.SQL_LOAD);
         pstn_select = conn.prepareStatement(IncomeTableControl.Config.SQL_SELECT);
+        pstn_selectByMonth = conn.prepareStatement(IncomeTableControl.Config.SQL_SELECT_BY_MONTH);
         pstn_update = conn.prepareStatement(IncomeTableControl.Config.SQL_UPDATE);
     }
 
@@ -275,6 +292,45 @@ public class IncomeTableControl implements TableControl {
     @Override
     public List<TableModel> select() throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public List<TableModel> selectByMonth(int month, int acc) throws SQLException {
+        List<TableModel> list = new ArrayList();
+        ResultSet resultSet = null;
+
+        try {
+            pstn_selectByMonth.setInt(1, month);
+            pstn_selectByMonth.setInt(2, acc);
+            resultSet = pstn_selectByMonth.executeQuery();
+
+            while (resultSet.next()) {
+
+                IncomeTable table = new IncomeTable();
+
+                table.setOid(resultSet.getInt("INC_OID"));
+                table.setDescription(resultSet.getString("INC_DESCRIPTION"));
+                table.setAccOid(acc);
+                table.setCategory(resultSet.getInt("INC_CATEGORY_ID"));
+                table.setDay(resultSet.getInt("INC_DAY"));
+                table.setMonth(month);
+                table.setYear(resultSet.getInt("INC_YEAR"));
+                table.setValue(resultSet.getDouble("INC_VALUE"));
+                table.setReceived(resultSet.getBoolean("INC_RECEIVED"));
+                table.setRepeat(resultSet.getBoolean("INC_REPEAT"));
+                table.setHashId(resultSet.getString("INC_HASH_ID"));
+
+                list.add((TableModel) table);
+            }
+
+        } catch (SQLException ex) {
+            throw ex;
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        }
+
+        return list;
     }
 
 }

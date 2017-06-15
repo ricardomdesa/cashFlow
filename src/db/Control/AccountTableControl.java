@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -255,8 +256,6 @@ public class AccountTableControl implements TableControl {
 
                 pstn_update.executeUpdate();
 
-            } else {
-
             }
 
         } catch (SQLException e) {
@@ -308,7 +307,40 @@ public class AccountTableControl implements TableControl {
 
     @Override
     public List<TableModel> select() throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ResultSet resultSet = null;
+        List<TableModel> list = new ArrayList();
+
+        try {
+
+            resultSet = pstn_select.executeQuery();
+
+            while (resultSet.next()) {
+
+                AccountTable account = new AccountTable();
+
+                account.setOid(resultSet.getInt("ACC_OID"));
+                account.setName(resultSet.getString("ACC_NAME"));
+                account.setStatus(resultSet.getString("ACC_STS"));
+                account.setType(resultSet.getString("ACC_TYPE"));
+                account.setDay(resultSet.getInt("ACC_DAY"));
+                account.setMonth(resultSet.getInt("ACC_MONTH"));
+                account.setYear(resultSet.getInt("ACC_YEAR"));
+                account.setValue(resultSet.getDouble("ACC_VALUE"));
+                account.setTotalExpense(resultSet.getInt("ACC_TOTAL_EXPENSE"));
+                account.setTotalIncome(resultSet.getInt("ACC_TOTAL_INCOME"));
+                account.setHashId(resultSet.getString("ACC_HASH_ID"));
+
+                list.add((TableModel) account);
+            }
+
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        }
+        return list;
     }
 
 }

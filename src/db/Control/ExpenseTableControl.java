@@ -92,18 +92,16 @@ public class ExpenseTableControl implements TableControl {
         protected static final String SQL_SELECT_BY_MONTH
                 = " select "
                 + "  t.EXP_OID as EXP_OID, "
-                + "  t.EXP_ACC_OID as EXP_ACC_OID, "
                 + "  t.EXP_VALUE as EXP_VALUE, "
                 + "  t.EXP_PAYED as EXP_PAYED, "
                 + "  t.EXP_REPEAT as EXP_REPEAT, "
                 + "  t.EXP_DESCRIPTION as EXP_DESCRIPTION, "
                 + "  t.EXP_CATEGORY_ID as EXP_CATEGORY_ID, "
                 + "  t.EXP_DAY as EXP_DAY, "
-                + "  t.EXP_MONTH as EXP_MONTH, "
                 + "  t.EXP_YEAR as EXP_YEAR, "
                 + "  t.EXP_HASH_ID as EXP_HASH_ID "
                 + " from " + EXPENSE_TABLE + " as t"
-                + " where t.EXP_MONTH=?";
+                + " where t.EXP_MONTH=? and t.EXP_ACC_OID = ?";
 
         protected static final String SQL_UPDATE
                 = " update " + EXPENSE_TABLE + " as t "
@@ -296,12 +294,14 @@ public class ExpenseTableControl implements TableControl {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public List<TableModel> selectByMonth(int month) throws SQLException {
+    public List<TableModel> selectByMonth(int month, int acc) throws SQLException {
         List<TableModel> list = new ArrayList();
         ResultSet resultSet = null;
 
         try {
             pstn_selectByMonth.setInt(1, month);
+            pstn_selectByMonth.setInt(2, acc);
+
             resultSet = pstn_selectByMonth.executeQuery();
 
             while (resultSet.next()) {
@@ -309,6 +309,7 @@ public class ExpenseTableControl implements TableControl {
                 ExpenseTable table = new ExpenseTable();
 
                 table.setOid(resultSet.getInt("EXP_OID"));
+                table.setAccOid(acc);
                 table.setDescription(resultSet.getString("EXP_DESCRIPTION"));
                 table.setCategory(resultSet.getInt("EXP_CATEGORY_ID"));
                 table.setDay(resultSet.getInt("EXP_DAY"));

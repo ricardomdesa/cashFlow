@@ -9,6 +9,7 @@ import Tables.AccountTable;
 import Tables.CashFlowInfo;
 import Tables.CategoryTable;
 import Tables.ExpenseTable;
+import cashFlow.GUI.Renderers.ModifiedListRenderer;
 import cashFlow.Listeners.ValuesChangeAction;
 import cashFlow.Listeners.ValuesChangeEvent;
 import db.Control.ModelControl;
@@ -218,7 +219,7 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
                 expCategoryCbx.addItem(categ);
             }
         }
-        expCategoryCbx.setRenderer(new CategoryListRenderer());
+        expCategoryCbx.setRenderer(new ModifiedListRenderer());
     }
 
     private void configScreenItens() {
@@ -237,6 +238,9 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
         DateFormatter d = new DateFormatter(dateFormat);
         expDateTfd.setFormatterFactory(new DefaultFormatterFactory(d));
         expDateTfd.setValue(new java.util.Date());
+
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
     }
 
@@ -272,10 +276,25 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
         expenseTable.setPayed(expPayedRBtn.isSelected());
         expenseTable.setRepeat(expRepeatRBtn.isSelected());
 
+        account.setTotalExpense(account.getTotalExpense() + num); //update the account obj
+        account.setValue(account.getValue() - num); //update the account obj
+
+        if (account.getValue() >= 0) {
+            account.setStatus(CashFlowInfo.POSITIVE);
+        } else {
+            account.setStatus(CashFlowInfo.NEGATIVE);
+        }
+
         expenseTable.setAccOid(account.getOid());
 
         try {
             ModelControl.save(expenseTable);
+        } catch (SQLException ex) {
+            Logger.getLogger(AddExpenseScreen.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            ModelControl.update(account);
         } catch (SQLException ex) {
             Logger.getLogger(AddExpenseScreen.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -6,6 +6,7 @@
 package Tables;
 
 import db.tableInterfaces.TableModel;
+import java.time.LocalTime;
 import java.util.Objects;
 
 /**
@@ -131,13 +132,13 @@ public class IncomeTable implements TableModel {
     }
 
     public void computeHash() {
-        String nameTmp = description;
-        int variantTmp = category;
-
-        StringBuilder builder = new StringBuilder();
-        builder.append(nameTmp).append(variantTmp);
-
-        String hash = builder.toString();
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.oid);
+        hash = 37 * hash + Objects.hashCode(this.accOid);
+        hash = 37 * hash + Objects.hashCode(this.category);
+        hash = 37 * hash + Objects.hashCode(this.description);
+        hash = 37 * hash + Objects.hashCode(this.day);
+        hash = 37 * hash + Objects.hashCode(LocalTime.now().toString());
 
         hashId = Integer.toHexString(Objects.hashCode(hash)).toUpperCase();
     }

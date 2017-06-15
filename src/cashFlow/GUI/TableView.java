@@ -5,11 +5,15 @@
  */
 package cashFlow.GUI;
 
+import Tables.AccountTable;
 import Tables.CashFlowInfo;
 import Tables.CategoryTable;
 import Tables.ExpenseTable;
+import Tables.IncomeTable;
 import db.Control.ModelControl;
 import db.tableInterfaces.TableModel;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -84,12 +88,13 @@ public class TableView extends javax.swing.JPanel {
     private javax.swing.JTable stsTable;
     // End of variables declaration//GEN-END:variables
 
-    public void fillExpensesTable(int month) throws Exception {
+    public void fillExpensesTable(Month month, int acc) throws Exception {
 
         List expenses = null;
         List ord = new ArrayList();
         ExpenseTable expenseTable = null;
         CategoryTable categ = null;
+        AccountTable accountTable = null;
 
         tableHeader = new ArrayList();
 
@@ -105,7 +110,7 @@ public class TableView extends javax.swing.JPanel {
         }
         stsScroll.setViewportView(stsTable);
 
-        expenses = ModelControl.selectWithParam(ExpenseTable.class, month);
+        expenses = ModelControl.selectWithParam(ExpenseTable.class, month.ordinal() + 1, acc);       // month.ordinal() returns from 0 to 11, so add 1
 
         for (int it = 0; it < expenses.size(); it++) {
 
@@ -118,17 +123,93 @@ public class TableView extends javax.swing.JPanel {
                     categ = (CategoryTable) categoryLoad;
                 }
 
+                TableModel accountLoad = ModelControl.load(AccountTable.class, expenseTable.getAccOid());
+
+                if (accountLoad instanceof AccountTable) {
+                    accountTable = (AccountTable) accountLoad;
+                }
+
                 TableUtils.addRow(stsTable);
+
+                LocalDate date = LocalDate.of(expenseTable.getYear(), month, expenseTable.getDay());
+
+                TableUtils.setCellValue(date.toString(), stsTable, it, tableHeader.get(0));
 
                 TableUtils.setCellValue(expenseTable.getDescription(), stsTable, it, tableHeader.get(1));
                 TableUtils.setCellValue(expenseTable.getValue(), stsTable, it, tableHeader.get(2));
                 TableUtils.setCellValue(categ.getCategory(), stsTable, it, tableHeader.get(3));
-                TableUtils.setCellValue(expenseTable.getValue(), stsTable, it, tableHeader.get(4));
+                TableUtils.setCellValue(accountTable.getName(), stsTable, it, tableHeader.get(4));
 
+                stsTable.getColumnModel().getColumn(1).setPreferredWidth(200);
+                stsTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+                stsTable.setEnabled(false);
             }
         }
 
-        stsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        stsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        stsTable.getTableHeader().setReorderingAllowed(false);
+
+    }
+
+    public void fillIncomeTable(Month month, int acc) throws Exception {
+
+        List incomes;
+        List ord = new ArrayList();
+        IncomeTable incomeTable;
+        CategoryTable categ = null;
+        AccountTable accountTable = null;
+
+        tableHeader = new ArrayList();
+
+        for (String ExpColumn : CashFlowInfo.ExpColumns) {
+            tableHeader.add(ExpColumn);
+            ord.add(ExpColumn);
+        }
+
+        try {
+            stsTable = TableUtils.create(tableHeader, ord, new ArrayList());
+        } catch (Exception ex) {
+            Logger.getLogger(TableView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        stsScroll.setViewportView(stsTable);
+
+        incomes = ModelControl.selectWithParam(IncomeTable.class, month.ordinal() + 1, acc);       // month.ordinal() returns from 0 to 11, so add 1
+
+        for (int it = 0; it < incomes.size(); it++) {
+
+            if (incomes.get(it) instanceof IncomeTable) {
+                incomeTable = (IncomeTable) incomes.get(it);
+
+                TableModel categoryLoad = ModelControl.load(CategoryTable.class, incomeTable.getCategory());
+
+                if (categoryLoad instanceof CategoryTable) {
+                    categ = (CategoryTable) categoryLoad;
+                }
+
+                TableModel accountLoad = ModelControl.load(AccountTable.class, incomeTable.getAccOid());
+
+                if (accountLoad instanceof AccountTable) {
+                    accountTable = (AccountTable) accountLoad;
+                }
+
+                TableUtils.addRow(stsTable);
+
+                LocalDate date = LocalDate.of(incomeTable.getYear(), month, incomeTable.getDay());
+
+                TableUtils.setCellValue(date.toString(), stsTable, it, tableHeader.get(0));
+
+                TableUtils.setCellValue(incomeTable.getDescription(), stsTable, it, tableHeader.get(1));
+                TableUtils.setCellValue(incomeTable.getValue(), stsTable, it, tableHeader.get(2));
+                TableUtils.setCellValue(categ.getCategory(), stsTable, it, tableHeader.get(3));
+                TableUtils.setCellValue(accountTable.getName(), stsTable, it, tableHeader.get(4));
+
+                stsTable.getColumnModel().getColumn(1).setPreferredWidth(200);
+                stsTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+                stsTable.setEnabled(false);
+            }
+        }
+
+        stsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         stsTable.getTableHeader().setReorderingAllowed(false);
 
     }

@@ -20,6 +20,7 @@ public interface CashFlowInfo {
         ACCOUNT,
         EXPENSE,
         INCOME,
+        UPDATE,
         MAXNUM
     }
 

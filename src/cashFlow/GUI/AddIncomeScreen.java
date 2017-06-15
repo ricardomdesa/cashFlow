@@ -9,6 +9,7 @@ import Tables.AccountTable;
 import Tables.CashFlowInfo;
 import Tables.CategoryTable;
 import Tables.IncomeTable;
+import cashFlow.GUI.Renderers.ModifiedListRenderer;
 import cashFlow.Listeners.ValuesChangeAction;
 import cashFlow.Listeners.ValuesChangeEvent;
 import db.Control.ModelControl;
@@ -218,7 +219,7 @@ public class AddIncomeScreen extends javax.swing.JFrame implements ValuesChangeA
                 incCategoryCbx.addItem(categ);
             }
         }
-        incCategoryCbx.setRenderer(new CategoryListRenderer());
+        incCategoryCbx.setRenderer(new ModifiedListRenderer());
     }
 
     private void configScreenItens() {
@@ -272,12 +273,25 @@ public class AddIncomeScreen extends javax.swing.JFrame implements ValuesChangeA
         incomeTable.setReceived(incReceivedRBtn.isSelected());
         incomeTable.setRepeat(incRepeatRBtn.isSelected());
 
+        account.setTotalIncome(account.getTotalExpense() + num); //update the account obj
+        account.setValue(account.getValue() + num); //update the account obj
+
+        if (account.getValue() >= 0) {
+            account.setStatus(CashFlowInfo.POSITIVE);
+        } else {
+            account.setStatus(CashFlowInfo.NEGATIVE);
+        }
         incomeTable.setAccOid(account.getOid());
 
         try {
             ModelControl.save(incomeTable);
         } catch (SQLException ex) {
             Logger.getLogger(AddIncomeScreen.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            ModelControl.update(account);
+        } catch (SQLException ex) {
+            Logger.getLogger(AddExpenseScreen.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

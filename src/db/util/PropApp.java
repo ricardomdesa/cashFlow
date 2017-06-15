@@ -50,8 +50,7 @@ public class PropApp {
             prop.setProperty("database.protocol", "jdbc:derby:");
             prop.setProperty("database.persistence.unit.name", "CashFlowPU");
 
-            prop.list(System.out);
-
+//            prop.list(System.out);
             // save properties to project root folder
             prop.store(properties, null);
             prop.storeToXML(xml, null);
@@ -92,8 +91,7 @@ public class PropApp {
             prop.load(input);
 
             // get the property value and print it out
-            prop.list(System.out);
-
+            //       prop.list(System.out);
         } catch (IOException ex) {
             ex.printStackTrace(System.err);
         } finally {

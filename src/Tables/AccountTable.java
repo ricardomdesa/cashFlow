@@ -6,6 +6,7 @@
 package Tables;
 
 import db.tableInterfaces.TableModel;
+import java.time.LocalTime;
 import java.util.Objects;
 
 /**
@@ -129,13 +130,14 @@ public class AccountTable implements TableModel {
     }
 
     public void computeHash() {
-        String nameTmp = name;
-        String variantTmp = type;
-
-        StringBuilder builder = new StringBuilder();
-        builder.append(nameTmp).append(variantTmp);
-
-        String hash = builder.toString();
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.oid);
+        hash = 37 * hash + Objects.hashCode(this.name);
+        hash = 37 * hash + Objects.hashCode(this.value);
+        hash = 37 * hash + Objects.hashCode(this.status);
+        hash = 37 * hash + Objects.hashCode(this.type);
+        hash = 37 * hash + Objects.hashCode(this.day);
+        hash = 37 * hash + Objects.hashCode(LocalTime.now().toString());
 
         hashId = Integer.toHexString(Objects.hashCode(hash)).toUpperCase();
     }
@@ -173,6 +175,7 @@ public class AccountTable implements TableModel {
         hash = 37 * hash + Objects.hashCode(this.value);
         hash = 37 * hash + Objects.hashCode(this.status);
         hash = 37 * hash + Objects.hashCode(this.type);
+        hash = 37 * hash + Objects.hashCode(this.day);
         return hash;
     }
 
