@@ -9,8 +9,11 @@ import Tables.AccountTable;
 import Tables.ExpenseTable;
 import Tables.IncomeTable;
 import cashFlow.GUI.Renderers.ModifiedListRenderer;
+import cashFlow.Listeners.ValuesChangeAction;
+import cashFlow.Listeners.ValuesChangeEvent;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.logging.Level;
@@ -20,12 +23,13 @@ import java.util.logging.Logger;
  *
  * @author F98877A
  */
-public class StatementsScreen extends javax.swing.JFrame {
+public class StatementsScreen extends javax.swing.JFrame implements ValuesChangeAction {
 
     TableView tableView = new TableView();
     private Month currentMonth;
     private Object dataType = null;
     private AccountTable account;
+    private ValuesChangeEvent vc;
 
     public Object getDataType() {
         return dataType;
@@ -66,6 +70,7 @@ public class StatementsScreen extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         stsMonthCBx = new javax.swing.JComboBox();
         stsTypeLbl = new javax.swing.JLabel();
+        refreshBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -88,6 +93,13 @@ public class StatementsScreen extends javax.swing.JFrame {
 
         stsTypeLbl.setFont(new java.awt.Font("Lucida Console", 1, 14)); // NOI18N
 
+        refreshBtn.setText("Atualizar");
+        refreshBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -100,7 +112,9 @@ public class StatementsScreen extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(stsTypeLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 211, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 126, Short.MAX_VALUE)
+                        .addComponent(refreshBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(stsMonthCBx, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -113,7 +127,8 @@ public class StatementsScreen extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2)
-                    .addComponent(stsMonthCBx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(stsMonthCBx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(refreshBtn))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(stsTypeLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -137,10 +152,16 @@ public class StatementsScreen extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void refreshBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshBtnActionPerformed
+        // TODO add your handling code here:
+        fillTable();
+    }//GEN-LAST:event_refreshBtnActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton refreshBtn;
     private javax.swing.JComboBox stsMonthCBx;
     private javax.swing.JPanel stsPanel;
     private javax.swing.JLabel stsTypeLbl;
@@ -196,24 +217,45 @@ public class StatementsScreen extends javax.swing.JFrame {
 
     private void fillTable() {
 
+        tableView.setPanelToChange(vc);
         if (dataType != null) {
             if (dataType instanceof ExpenseTable) {
                 stsTypeLbl.setText("Despesas");
                 stsTypeLbl.setForeground(Color.red);
                 try {
+                    javax.swing.event.MouseInputAdapter mouseListener = mouseInputAdapter(tableView);
+                    tableView.setMouseListener(mouseListener);
                     tableView.fillExpensesTable(currentMonth, account.getOid());
                 } catch (Exception ex) {
                     Logger.getLogger(StatementsScreen.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (dataType instanceof IncomeTable) {
                 stsTypeLbl.setText("Receitas");
-                stsTypeLbl.setForeground(Color.GREEN);
+                stsTypeLbl.setForeground(Color.green);
                 try {
+                    javax.swing.event.MouseInputAdapter mouseListener = mouseInputAdapter(tableView);
+                    tableView.setMouseListener(mouseListener);
                     tableView.fillIncomeTable(currentMonth, account.getOid());
                 } catch (Exception ex) {
                     Logger.getLogger(StatementsScreen.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
+    }
+
+    public javax.swing.event.MouseInputAdapter mouseInputAdapter(TableView tableViewPanel) {
+        return new javax.swing.event.MouseInputAdapter() {
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e); //To change body of generated methods, choose Tools | Templates.
+                tableViewPanel.mouseOnClick(e);
+            }
+        };
+    }
+
+    @Override
+    public void setPanelToChange(ValuesChangeEvent panel) {
+        this.vc = panel;
     }
 }

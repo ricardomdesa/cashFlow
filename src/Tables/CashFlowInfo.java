@@ -15,6 +15,8 @@ public interface CashFlowInfo {
     public static final String CATEGORY_TYPE_IN = "INCOME";
     public static final String POSITIVE = "POSITIVE";
     public static final String NEGATIVE = "NEGATIVE";
+    public static final int INCOME_CTRL = 1;
+    public static final int EXPENSE_CTRL = 2;
 
     public enum addScreenOp {
         ACCOUNT,

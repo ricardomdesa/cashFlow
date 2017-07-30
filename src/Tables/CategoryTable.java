@@ -19,6 +19,8 @@ public class CategoryTable implements TableModel {
     private String category;
     private String type;
     private String color;
+    private double goalValue;
+    private double percentage;
     private String hashId;
 
     public CategoryTable() {
@@ -54,6 +56,22 @@ public class CategoryTable implements TableModel {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public double getGoalValue() {
+        return goalValue;
+    }
+
+    public void setGoalValue(double goalValue) {
+        this.goalValue = goalValue;
+    }
+
+    public double getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(double percentage) {
+        this.percentage = percentage;
     }
 
     public String getHashId() {

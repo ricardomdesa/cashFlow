@@ -17,8 +17,6 @@ public class AccountTable implements TableModel {
 
     private int oid;
     private double value;
-    private double totalExpense;
-    private double totalIncome;
     private String name;
     private String status;
     private String type;
@@ -27,13 +25,11 @@ public class AccountTable implements TableModel {
     private int year;
     private String hashId;
 
-    public AccountTable(int oid, String name, double value, String status, double totalExpense, double totalIncome, String type, String hashId) {
+    public AccountTable(int oid, String name, double value, String status, String type, String hashId) {
         this.oid = oid;
         this.name = name;
         this.value = value;
         this.status = status;
-        this.totalExpense = totalExpense;
-        this.totalIncome = totalIncome;
         this.type = type;
         this.hashId = hashId;
     }
@@ -71,22 +67,6 @@ public class AccountTable implements TableModel {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public double getTotalExpense() {
-        return totalExpense;
-    }
-
-    public void setTotalExpense(double totalExpense) {
-        this.totalExpense = totalExpense;
-    }
-
-    public double getTotalIncome() {
-        return totalIncome;
-    }
-
-    public void setTotalIncome(double totalIncome) {
-        this.totalIncome = totalIncome;
     }
 
     public String getType() {

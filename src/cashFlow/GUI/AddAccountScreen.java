@@ -161,9 +161,6 @@ public class AddAccountScreen extends javax.swing.JFrame implements ValuesChange
             accountTable.setStatus(CashFlowInfo.NEGATIVE);
         }
 
-        accountTable.setTotalExpense(0);
-        accountTable.setTotalIncome(0);
-
         accountTable.setDay(LocalDate.now().getDayOfMonth());
         accountTable.setMonth(LocalDate.now().getMonthValue());
         accountTable.setYear(LocalDate.now().getYear());
@@ -175,7 +172,7 @@ public class AddAccountScreen extends javax.swing.JFrame implements ValuesChange
             Logger.getLogger(AddAccountScreen.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        vc.setValuesChanged(this);
+        vc.setValuesChanged(this, null);
         this.dispose();
     }//GEN-LAST:event_addAccSaveBtnActionPerformed
 

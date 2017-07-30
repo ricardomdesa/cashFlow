@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +39,10 @@ public class AddIncomeScreen extends javax.swing.JFrame implements ValuesChangeA
     private List<TableModel> cat = new ArrayList();
     private AccountTable account;
     private ValuesChangeEvent vc;
+    private boolean edit;
+    private int currentOid;
+    private IncomeTable originalValue;
+    List<String> dateFormatStrings = Arrays.asList("dd/MM/yyyy", "d/M/yyyy", "dd/M/yyyy", "d/MM/yyyy");
 
     /**
      * Creates new form AddExpenseScreen
@@ -48,6 +53,15 @@ public class AddIncomeScreen extends javax.swing.JFrame implements ValuesChangeA
         setCategoryList();
 
         configScreenItens();
+
+    }
+
+    public AddIncomeScreen(int oid) {
+        initComponents();
+        setCategoryList();
+        edit = true;
+        currentOid = oid;
+        fillValuesForEdition();
 
     }
 
@@ -182,8 +196,8 @@ public class AddIncomeScreen extends javax.swing.JFrame implements ValuesChangeA
     private void incSaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_incSaveBtnActionPerformed
 
         // TODO add your handling code here:
-        getAndSaveValues();
-        vc.setValuesChanged(this);
+        getAndSaveValues(edit);
+        vc.setValuesChanged(this, null);
         this.dispose();
     }//GEN-LAST:event_incSaveBtnActionPerformed
 
@@ -239,16 +253,20 @@ public class AddIncomeScreen extends javax.swing.JFrame implements ValuesChangeA
         incDateTfd.setFormatterFactory(new DefaultFormatterFactory(d));
         incDateTfd.setValue(new java.util.Date());
 
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
     }
 
-    private void getAndSaveValues() {
+    private void getAndSaveValues(boolean edit1) {
 
         IncomeTable incomeTable = new IncomeTable();
-
+        incomeTable.setOid(currentOid);
         //Date values
         String date = incDateTfd.getText();
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate parse = LocalDate.parse(date, dateFormatter);
+
+        LocalDate parse = tryParse(date);
+
         incomeTable.setDay(parse.getDayOfMonth());
         incomeTable.setMonth(parse.getMonthValue());
         incomeTable.setYear(parse.getYear());
@@ -267,14 +285,21 @@ public class AddIncomeScreen extends javax.swing.JFrame implements ValuesChangeA
         String value = incValueTfd.getText();
         value = value.replace(".", "");
         value = value.replace(",", ".");
-        Double num = new Double(value);
-        incomeTable.setValue(num);
+        Double newValue = new Double(value);
+        incomeTable.setValue(newValue);
 
         incomeTable.setReceived(incReceivedRBtn.isSelected());
         incomeTable.setRepeat(incRepeatRBtn.isSelected());
 
-        account.setTotalIncome(account.getTotalExpense() + num); //update the account obj
-        account.setValue(account.getValue() + num); //update the account obj
+        if (edit1) {
+            if (newValue > originalValue.getValue()) {
+                account.setValue(account.getValue() + (newValue - originalValue.getValue())); //increase the value
+            } else {
+                account.setValue(account.getValue() - (originalValue.getValue() - newValue)); //decrease the value
+            }
+        } else {
+            account.setValue(account.getValue() + newValue); //update the account obj
+        }
 
         if (account.getValue() >= 0) {
             account.setStatus(CashFlowInfo.POSITIVE);
@@ -283,10 +308,18 @@ public class AddIncomeScreen extends javax.swing.JFrame implements ValuesChangeA
         }
         incomeTable.setAccOid(account.getOid());
 
-        try {
-            ModelControl.save(incomeTable);
-        } catch (SQLException ex) {
-            Logger.getLogger(AddIncomeScreen.class.getName()).log(Level.SEVERE, null, ex);
+        if (edit1) {
+            try {
+                ModelControl.update(incomeTable);
+            } catch (SQLException ex) {
+                Logger.getLogger(AddIncomeScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                ModelControl.save(incomeTable);
+            } catch (SQLException ex) {
+                Logger.getLogger(AddIncomeScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         try {
             ModelControl.update(account);
@@ -299,5 +332,45 @@ public class AddIncomeScreen extends javax.swing.JFrame implements ValuesChangeA
     @Override
     public void setPanelToChange(ValuesChangeEvent panel) {
         this.vc = panel;
+    }
+
+    private void fillValuesForEdition() {
+        TableModel load = null;
+        try {
+            load = ModelControl.load(IncomeTable.class, currentOid);
+        } catch (SQLException ex) {
+            Logger.getLogger(AddExpenseScreen.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (load instanceof IncomeTable) {
+            originalValue = (IncomeTable) load;
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(originalValue.getDay()).append("/").append(originalValue.getMonth()).append("/").append(originalValue.getYear());
+            incDateTfd.setFormatterFactory(null);
+            incDateTfd.setText(sb.toString());
+
+            incDescriptionTfd.setText(originalValue.getDescription());
+            incCategoryCbx.setSelectedItem(originalValue.getCategory());
+            String value = String.valueOf(originalValue.getValue()).replace(".", ",");
+            incValueTfd.setFormatterFactory(null);
+            incValueTfd.setText(value);
+            incReceivedRBtn.setSelected(originalValue.isReceived());
+            incRepeatRBtn.setSelected(originalValue.isRepeat());
+
+        }
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
+
+    private LocalDate tryParse(String date) {
+        for (String formatString : dateFormatStrings) {
+            try {
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(formatString);
+                return LocalDate.parse(date, dateFormatter);
+            } catch (Exception e) {
+            }
+        }
+
+        return null;
     }
 }

@@ -31,6 +31,8 @@ public class CategoryTableControl implements TableControl {
                 + "  CAT_CATEGORY VARCHAR(256) NOT NULL,  "
                 + "  CAT_TYPE VARCHAR(256) NOT NULL,  "
                 + "  CAT_COLOR VARCHAR(256) NOT NULL,  "
+                + "  CAT_GOAL_VAL DOUBLE NOT NULL,  "
+                + "  CAT_PERCENTAGE DOUBLE NOT NULL,  "
                 + "  CAT_HASH_ID VARCHAR(256) NOT NULL, "
                 + "  CONSTRAINT CAT_PK_OID PRIMARY KEY (CAT_OID),  "
                 + "  CONSTRAINT CAT_UC_HASH_ID UNIQUE (CAT_HASH_ID)) ";
@@ -42,8 +44,10 @@ public class CategoryTableControl implements TableControl {
                 + "   CAT_CATEGORY, "
                 + "   CAT_TYPE, "
                 + "   CAT_COLOR, "
+                + "   CAT_GOAL_VAL, "
+                + "   CAT_PERCENTAGE, "
                 + "   CAT_HASH_ID ) "
-                + "  values (?, ?, ?, ?) ";
+                + "  values (?, ?, ?, ?, ?, ?) ";
 
         protected static final String SQL_DELETE = "delete from " + CATEGORY_TABLE + " where CAT_OID = ?";
 
@@ -52,6 +56,8 @@ public class CategoryTableControl implements TableControl {
                 + "  t.CAT_CATEGORY as CAT_CATEGORY, "
                 + "  t.CAT_TYPE as CAT_TYPE, "
                 + "  t.CAT_COLOR as CAT_COLOR, "
+                + "  t.CAT_GOAL_VAL as CAT_GOAL_VAL, "
+                + "  t.CAT_PERCENTAGE as CAT_PERCENTAGE, "
                 + "  t.CAT_HASH_ID as CAT_HASH_ID "
                 + " from " + CATEGORY_TABLE + " as t "
                 + " where t.CAT_OID=? ";
@@ -62,6 +68,8 @@ public class CategoryTableControl implements TableControl {
                 + "  t.CAT_CATEGORY as CAT_CATEGORY, "
                 + "  t.CAT_TYPE as CAT_TYPE, "
                 + "  t.CAT_COLOR as CAT_COLOR, "
+                + "  t.CAT_GOAL_VAL as CAT_GOAL_VAL, "
+                + "  t.CAT_PERCENTAGE as CAT_PERCENTAGE, "
                 + "  t.CAT_HASH_ID as CAT_HASH_ID "
                 + " from " + CATEGORY_TABLE + " as t";
 
@@ -71,6 +79,8 @@ public class CategoryTableControl implements TableControl {
                 + "   t.CAT_CATEGORY = ?, "
                 + "   t.CAT_TYPE = ?, "
                 + "   t.CAT_COLOR = ?, "
+                + "   t.CAT_GOAL_VAL = ?, "
+                + "   t.CAT_PERCENTAGE = ?, "
                 + "   t.CAT_HASH_ID = ? "
                 + "  where t.CAT_OID = ? ";
 
@@ -148,7 +158,9 @@ public class CategoryTableControl implements TableControl {
                 pstn_insert.setString(1, catTable.getCategory());
                 pstn_insert.setString(2, catTable.getType());
                 pstn_insert.setString(3, catTable.getColor());
-                pstn_insert.setString(4, catTable.getHashId());
+                pstn_insert.setDouble(4, catTable.getGoalValue());
+                pstn_insert.setDouble(5, catTable.getPercentage());
+                pstn_insert.setString(6, catTable.getHashId());
 
                 pstn_insert.executeUpdate();
 
@@ -220,6 +232,8 @@ public class CategoryTableControl implements TableControl {
                 category.setCategory(resultSet.getString("CAT_CATEGORY"));
                 category.setType(resultSet.getString("CAT_TYPE"));
                 category.setColor(resultSet.getString("CAT_COLOR"));
+                category.setGoalValue(resultSet.getDouble("CAT_GOAL_VAL"));
+                category.setPercentage(resultSet.getDouble("CAT_PERCENTAGE"));
                 category.setHashId(resultSet.getString("CAT_HASH_ID"));
             }
 
@@ -250,6 +264,8 @@ public class CategoryTableControl implements TableControl {
                 catTable.setCategory(resultSet.getString("CAT_CATEGORY"));
                 catTable.setType(resultSet.getString("CAT_TYPE"));
                 catTable.setColor(resultSet.getString("CAT_COLOR"));
+                catTable.setGoalValue(resultSet.getDouble("CAT_GOAL_VAL"));
+                catTable.setPercentage(resultSet.getDouble("CAT_PERCENTAGE"));
                 catTable.setHashId(resultSet.getString("CAT_HASH_ID"));
 
                 list.add((TableModel) catTable);

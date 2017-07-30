@@ -247,7 +247,35 @@ public class IncomeTableControl implements TableControl {
 
     @Override
     public void update(TableModel tableModel) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+
+            if (tableModel instanceof IncomeTable) {
+                IncomeTable incTable = (IncomeTable) tableModel;
+
+                incTable.computeHash();
+
+                pstn_update.setInt(1, incTable.getAccOid());
+                pstn_update.setDouble(2, incTable.getValue());
+                pstn_update.setBoolean(3, incTable.isReceived());
+                pstn_update.setBoolean(4, incTable.isRepeat());
+                pstn_update.setString(5, incTable.getDescription());
+                pstn_update.setInt(6, incTable.getCategory());
+                pstn_update.setInt(7, incTable.getDay());
+                pstn_update.setInt(8, incTable.getMonth());
+                pstn_update.setInt(9, incTable.getYear());
+                pstn_update.setString(10, incTable.getHashId());
+
+                pstn_update.setInt(11, incTable.getOid());
+
+                pstn_update.executeUpdate();
+
+            }
+
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            conn.commit();
+        }
     }
 
     @Override
@@ -268,6 +296,7 @@ public class IncomeTableControl implements TableControl {
                 incTable = new IncomeTable();
 
                 incTable.setOid((Integer) id);
+                incTable.setAccOid(resultSet.getInt("INC_ACC_OID"));
                 incTable.setDescription(resultSet.getString("INC_DESCRIPTION"));
                 incTable.setCategory(resultSet.getInt("INC_CATEGORY_ID"));
                 incTable.setDay(resultSet.getInt("INC_DAY"));

@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,9 +36,13 @@ import javax.swing.text.NumberFormatter;
  */
 public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChangeAction {
 
+    private int currentOid;
     private List<TableModel> cat = new ArrayList();
     private AccountTable account;
     private ValuesChangeEvent vc;
+    private boolean edit;
+    List<String> dateFormatStrings = Arrays.asList("dd/MM/yyyy", "d/M/yyyy", "dd/M/yyyy", "d/MM/yyyy");
+    private ExpenseTable originalValue;
 
     /**
      * Creates new form AddExpenseScreen
@@ -46,8 +51,17 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
         this.account = null;
         initComponents();
         setCategoryList();
-
+        edit = false;
         configScreenItens();
+
+    }
+
+    public AddExpenseScreen(int oid) {
+        initComponents();
+        setCategoryList();
+        edit = true;
+        currentOid = oid;
+        fillValuesForEdition();
 
     }
 
@@ -182,8 +196,12 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
     private void expSaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_expSaveBtnActionPerformed
 
         // TODO add your handling code here:
-        getAndSaveValues();
-        vc.setValuesChanged(this);
+        getAndSaveValues(edit);
+        if (edit) {
+            vc.setValuesChanged(this, true);
+        } else {
+            vc.setValuesChanged(this, false);
+        }
         this.dispose();
     }//GEN-LAST:event_expSaveBtnActionPerformed
 
@@ -244,14 +262,15 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
 
     }
 
-    private void getAndSaveValues() {
+    private void getAndSaveValues(boolean edit1) {
 
         ExpenseTable expenseTable = new ExpenseTable();
-
+        expenseTable.setOid(currentOid);
         //Date values
         String date = expDateTfd.getText();
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate parse = LocalDate.parse(date, dateFormatter);
+
+        LocalDate parse = tryParse(date);
+
         expenseTable.setDay(parse.getDayOfMonth());
         expenseTable.setMonth(parse.getMonthValue());
         expenseTable.setYear(parse.getYear());
@@ -270,15 +289,21 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
         String value = expValueTfd.getText();
         value = value.replace(".", "");
         value = value.replace(",", ".");
-        Double num = new Double(value);
-        expenseTable.setValue(num);
+        Double newValue = new Double(value);
+        expenseTable.setValue(newValue);
 
         expenseTable.setPayed(expPayedRBtn.isSelected());
         expenseTable.setRepeat(expRepeatRBtn.isSelected());
 
-        account.setTotalExpense(account.getTotalExpense() + num); //update the account obj
-        account.setValue(account.getValue() - num); //update the account obj
-
+        if (edit1) {
+            if (newValue > originalValue.getValue()) {
+                account.setValue(account.getValue() + (newValue - originalValue.getValue())); //increase the value
+            } else {
+                account.setValue(account.getValue() + (originalValue.getValue() - newValue)); //decrease the value
+            }
+        } else {
+            account.setValue(account.getValue() - newValue); //update the account obj
+        }
         if (account.getValue() >= 0) {
             account.setStatus(CashFlowInfo.POSITIVE);
         } else {
@@ -287,12 +312,19 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
 
         expenseTable.setAccOid(account.getOid());
 
-        try {
-            ModelControl.save(expenseTable);
-        } catch (SQLException ex) {
-            Logger.getLogger(AddExpenseScreen.class.getName()).log(Level.SEVERE, null, ex);
+        if (!edit1) {
+            try {
+                ModelControl.save(expenseTable);
+            } catch (SQLException ex) {
+                Logger.getLogger(AddExpenseScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                ModelControl.update(expenseTable);
+            } catch (SQLException ex) {
+                Logger.getLogger(AddExpenseScreen.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-
         try {
             ModelControl.update(account);
         } catch (SQLException ex) {
@@ -304,5 +336,45 @@ public class AddExpenseScreen extends javax.swing.JFrame implements ValuesChange
     @Override
     public void setPanelToChange(ValuesChangeEvent panel) {
         this.vc = panel;
+    }
+
+    private void fillValuesForEdition() {
+        TableModel load = null;
+        try {
+            load = ModelControl.load(ExpenseTable.class, currentOid);
+        } catch (SQLException ex) {
+            Logger.getLogger(AddExpenseScreen.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (load instanceof ExpenseTable) {
+            originalValue = (ExpenseTable) load;
+
+            StringBuilder sb = new StringBuilder();
+            sb.append(originalValue.getDay()).append("/").append(originalValue.getMonth()).append("/").append(originalValue.getYear());
+            expDateTfd.setFormatterFactory(null);
+            expDateTfd.setText(sb.toString());
+
+            expDescriptionTfd.setText(originalValue.getDescription());
+            expCategoryCbx.setSelectedItem(originalValue.getCategory());
+            String value = String.valueOf(originalValue.getValue()).replace(".", ",");
+            expValueTfd.setFormatterFactory(null);
+            expValueTfd.setText(value);
+            expPayedRBtn.setSelected(originalValue.isPayed());
+            expRepeatRBtn.setSelected(originalValue.isRepeat());
+
+        }
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
+
+    private LocalDate tryParse(String date) {
+        for (String formatString : dateFormatStrings) {
+            try {
+                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(formatString);
+                return LocalDate.parse(date, dateFormatter);
+            } catch (Exception e) {
+            }
+        }
+
+        return null;
     }
 }

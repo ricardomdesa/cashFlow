@@ -29,8 +29,6 @@ public class AccountTableControl implements TableControl {
         protected static final String SQL_CREATE = " create table " + ACCOUNT_TABLE + " ( "
                 + "  ACC_OID INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),  " //-- object identification
                 + "  ACC_VALUE DOUBLE NOT NULL,  "
-                + "  ACC_TOTAL_EXPENSE DOUBLE NOT NULL,  "
-                + "  ACC_TOTAL_INCOME DOUBLE NOT NULL,  "
                 + "  ACC_NAME VARCHAR(256) NOT NULL,   " //Itau, carteira, etc
                 + "  ACC_STS VARCHAR(128) NOT NULL,  "
                 + "  ACC_TYPE VARCHAR(256) NOT NULL,  " // Poupanca, corrente, salario
@@ -46,8 +44,6 @@ public class AccountTableControl implements TableControl {
         protected static final String SQL_INSERT
                 = " insert into " + ACCOUNT_TABLE + " ( "
                 + "   ACC_VALUE, "
-                + "   ACC_TOTAL_EXPENSE, "
-                + "   ACC_TOTAL_INCOME, "
                 + "   ACC_NAME, "
                 + "   ACC_STS, "
                 + "   ACC_TYPE,"
@@ -55,15 +51,13 @@ public class AccountTableControl implements TableControl {
                 + "   ACC_MONTH,"
                 + "   ACC_YEAR,"
                 + "   ACC_HASH_ID ) "
-                + "  values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+                + "  values (?, ?, ?, ?, ?, ?, ?, ?) ";
 
         protected static final String SQL_DELETE = "delete from " + ACCOUNT_TABLE + " where ACC_OID = ?";
 
         protected static final String SQL_LOAD
                 = " select "
                 + "  t.ACC_VALUE as ACC_VALUE, "
-                + "  t.ACC_TOTAL_EXPENSE as ACC_TOTAL_EXPENSE, "
-                + "  t.ACC_TOTAL_INCOME as ACC_TOTAL_INCOME, "
                 + "  t.ACC_NAME as ACC_NAME, "
                 + "  t.ACC_STS as ACC_STS, "
                 + "  t.ACC_TYPE as ACC_TYPE, "
@@ -78,8 +72,6 @@ public class AccountTableControl implements TableControl {
                 = " select "
                 + "  t.ACC_OID as ACC_OID, "
                 + "  t.ACC_VALUE as ACC_VALUE, "
-                + "  t.ACC_TOTAL_EXPENSE as ACC_TOTAL_EXPENSE, "
-                + "  t.ACC_TOTAL_INCOME as ACC_TOTAL_INCOME, "
                 + "  t.ACC_NAME as ACC_NAME, "
                 + "  t.ACC_STS as ACC_STS, "
                 + "  t.ACC_TYPE as ACC_TYPE, "
@@ -93,8 +85,6 @@ public class AccountTableControl implements TableControl {
                 = " update " + ACCOUNT_TABLE + " as t "
                 + "  set "
                 + "   t.ACC_VALUE = ?, "
-                + "   t.ACC_TOTAL_EXPENSE = ?, "
-                + "   t.ACC_TOTAL_INCOME = ?, "
                 + "   t.ACC_NAME = ?, "
                 + "   t.ACC_STS = ?, "
                 + "   t.ACC_TYPE = ?, "
@@ -177,15 +167,13 @@ public class AccountTableControl implements TableControl {
                 accTable.computeHash();
 
                 pstn_insert.setDouble(1, accTable.getValue());
-                pstn_insert.setDouble(2, accTable.getTotalExpense());
-                pstn_insert.setDouble(3, accTable.getTotalIncome());
-                pstn_insert.setString(4, accTable.getName());
-                pstn_insert.setString(5, accTable.getStatus());
-                pstn_insert.setString(6, accTable.getType());
-                pstn_insert.setInt(7, accTable.getDay());
-                pstn_insert.setInt(8, accTable.getMonth());
-                pstn_insert.setInt(9, accTable.getYear());
-                pstn_insert.setString(10, accTable.getHashId());
+                pstn_insert.setString(2, accTable.getName());
+                pstn_insert.setString(3, accTable.getStatus());
+                pstn_insert.setString(4, accTable.getType());
+                pstn_insert.setInt(5, accTable.getDay());
+                pstn_insert.setInt(6, accTable.getMonth());
+                pstn_insert.setInt(7, accTable.getYear());
+                pstn_insert.setString(8, accTable.getHashId());
 
                 pstn_insert.executeUpdate();
 
@@ -242,17 +230,15 @@ public class AccountTableControl implements TableControl {
                 accountTable.computeHash();
 
                 pstn_update.setDouble(1, accountTable.getValue());
-                pstn_update.setDouble(2, accountTable.getTotalExpense());
-                pstn_update.setDouble(3, accountTable.getTotalIncome());
-                pstn_update.setString(4, accountTable.getName());
-                pstn_update.setString(5, accountTable.getStatus());
-                pstn_update.setString(6, accountTable.getType());
-                pstn_update.setInt(7, accountTable.getDay());
-                pstn_update.setInt(8, accountTable.getMonth());
-                pstn_update.setInt(9, accountTable.getYear());
-                pstn_update.setString(10, accountTable.getHashId());
+                pstn_update.setString(2, accountTable.getName());
+                pstn_update.setString(3, accountTable.getStatus());
+                pstn_update.setString(4, accountTable.getType());
+                pstn_update.setInt(5, accountTable.getDay());
+                pstn_update.setInt(6, accountTable.getMonth());
+                pstn_update.setInt(7, accountTable.getYear());
+                pstn_update.setString(8, accountTable.getHashId());
 
-                pstn_update.setInt(11, accountTable.getOid());
+                pstn_update.setInt(9, accountTable.getOid());
 
                 pstn_update.executeUpdate();
 
@@ -290,8 +276,6 @@ public class AccountTableControl implements TableControl {
                 account.setMonth(resultSet.getInt("ACC_MONTH"));
                 account.setYear(resultSet.getInt("ACC_YEAR"));
                 account.setValue(resultSet.getDouble("ACC_VALUE"));
-                account.setTotalExpense(resultSet.getInt("ACC_TOTAL_EXPENSE"));
-                account.setTotalIncome(resultSet.getInt("ACC_TOTAL_INCOME"));
                 account.setHashId(resultSet.getString("ACC_HASH_ID"));
             }
 
@@ -326,8 +310,6 @@ public class AccountTableControl implements TableControl {
                 account.setMonth(resultSet.getInt("ACC_MONTH"));
                 account.setYear(resultSet.getInt("ACC_YEAR"));
                 account.setValue(resultSet.getDouble("ACC_VALUE"));
-                account.setTotalExpense(resultSet.getInt("ACC_TOTAL_EXPENSE"));
-                account.setTotalIncome(resultSet.getInt("ACC_TOTAL_INCOME"));
                 account.setHashId(resultSet.getString("ACC_HASH_ID"));
 
                 list.add((TableModel) account);

@@ -10,30 +10,61 @@ import Tables.CashFlowInfo;
 import Tables.CategoryTable;
 import Tables.ExpenseTable;
 import Tables.IncomeTable;
+import cashFlow.Listeners.ValuesChangeAction;
+import cashFlow.Listeners.ValuesChangeEvent;
 import db.Control.ModelControl;
 import db.tableInterfaces.TableModel;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.event.MouseInputAdapter;
+import utils.ObjectCellTableGetValueCellTableView;
 import utils.TableUtils;
 
 /**
  *
  * @author F98877A
  */
-public class TableView extends javax.swing.JPanel {
+public class TableView extends javax.swing.JPanel implements ValuesChangeAction {
 
-    protected List tableHeader;
+    protected Map<Object, Class> tableHeader;
+    protected javax.swing.event.MouseInputAdapter mouseListener;
+    protected JMenuItem menuItem;
+    protected int r;
+    protected ExpenseTable expenseSelected;
+    protected IncomeTable incomeSelected;
+    protected IncomeTable incLoad = null;
+    protected ExpenseTable expLoad = null;
+    protected AccountTable accExp = null;
+    private ValuesChangeEvent vc;
 
     /**
      * Creates new form TableView
      */
     public TableView() {
         initComponents();
+    }
+
+    public MouseInputAdapter getMouseListener() {
+        return mouseListener;
+    }
+
+    public void setMouseListener(MouseInputAdapter mouseListener) {
+        this.mouseListener = mouseListener;
     }
 
     /**
@@ -96,10 +127,10 @@ public class TableView extends javax.swing.JPanel {
         CategoryTable categ = null;
         AccountTable accountTable = null;
 
-        tableHeader = new ArrayList();
+        tableHeader = new HashMap();
 
         for (String ExpColumn : CashFlowInfo.ExpColumns) {
-            tableHeader.add(ExpColumn);
+            tableHeader.put(ExpColumn, ObjectCellTableGetValueCellTableView.class);
             ord.add(ExpColumn);
         }
 
@@ -130,15 +161,32 @@ public class TableView extends javax.swing.JPanel {
                 }
 
                 TableUtils.addRow(stsTable);
-
+                CellValueObj cellValueObj = new CellValueObj();
+                cellValueObj.setObjId(expenseTable.getOid());
                 LocalDate date = LocalDate.of(expenseTable.getYear(), month, expenseTable.getDay());
-
-                TableUtils.setCellValue(date.toString(), stsTable, it, tableHeader.get(0));
-
-                TableUtils.setCellValue(expenseTable.getDescription(), stsTable, it, tableHeader.get(1));
-                TableUtils.setCellValue(expenseTable.getValue(), stsTable, it, tableHeader.get(2));
-                TableUtils.setCellValue(categ.getCategory(), stsTable, it, tableHeader.get(3));
-                TableUtils.setCellValue(accountTable.getName(), stsTable, it, tableHeader.get(4));
+                cellValueObj.setValue(date.toString());
+                cellValueObj.setControl(CashFlowInfo.EXPENSE_CTRL);
+                TableUtils.setCellValue(cellValueObj, stsTable, it, CashFlowInfo.ExpColumns[0]);
+                cellValueObj = new CellValueObj();
+                cellValueObj.setObjId(expenseTable.getOid());
+                cellValueObj.setValue(expenseTable.getDescription());
+                cellValueObj.setControl(CashFlowInfo.EXPENSE_CTRL);
+                TableUtils.setCellValue(cellValueObj, stsTable, it, CashFlowInfo.ExpColumns[1]);
+                cellValueObj = new CellValueObj();
+                cellValueObj.setObjId(expenseTable.getOid());
+                cellValueObj.setValue(String.valueOf(expenseTable.getValue()));
+                cellValueObj.setControl(CashFlowInfo.EXPENSE_CTRL);
+                TableUtils.setCellValue(cellValueObj, stsTable, it, CashFlowInfo.ExpColumns[2]);
+                cellValueObj = new CellValueObj();
+                cellValueObj.setObjId(expenseTable.getOid());
+                cellValueObj.setValue(categ.getCategory());
+                cellValueObj.setControl(CashFlowInfo.EXPENSE_CTRL);
+                TableUtils.setCellValue(cellValueObj, stsTable, it, CashFlowInfo.ExpColumns[3]);
+                cellValueObj = new CellValueObj();
+                cellValueObj.setObjId(expenseTable.getOid());
+                cellValueObj.setValue(accountTable.getName());
+                cellValueObj.setControl(CashFlowInfo.EXPENSE_CTRL);
+                TableUtils.setCellValue(cellValueObj, stsTable, it, CashFlowInfo.ExpColumns[4]);
 
                 stsTable.getColumnModel().getColumn(1).setPreferredWidth(200);
                 stsTable.getColumnModel().getColumn(4).setPreferredWidth(100);
@@ -147,22 +195,23 @@ public class TableView extends javax.swing.JPanel {
         }
 
         stsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        stsTable.addMouseListener(mouseListener);
         stsTable.getTableHeader().setReorderingAllowed(false);
 
     }
 
     public void fillIncomeTable(Month month, int acc) throws Exception {
 
-        List incomes;
+        List incomes = null;
         List ord = new ArrayList();
-        IncomeTable incomeTable;
+        IncomeTable incomeTable = null;
         CategoryTable categ = null;
         AccountTable accountTable = null;
 
-        tableHeader = new ArrayList();
+        tableHeader = new HashMap();
 
         for (String ExpColumn : CashFlowInfo.ExpColumns) {
-            tableHeader.add(ExpColumn);
+            tableHeader.put(ExpColumn, ObjectCellTableGetValueCellTableView.class);
             ord.add(ExpColumn);
         }
 
@@ -194,14 +243,32 @@ public class TableView extends javax.swing.JPanel {
 
                 TableUtils.addRow(stsTable);
 
-                LocalDate date = LocalDate.of(incomeTable.getYear(), month, incomeTable.getDay());
-
-                TableUtils.setCellValue(date.toString(), stsTable, it, tableHeader.get(0));
-
-                TableUtils.setCellValue(incomeTable.getDescription(), stsTable, it, tableHeader.get(1));
-                TableUtils.setCellValue(incomeTable.getValue(), stsTable, it, tableHeader.get(2));
-                TableUtils.setCellValue(categ.getCategory(), stsTable, it, tableHeader.get(3));
-                TableUtils.setCellValue(accountTable.getName(), stsTable, it, tableHeader.get(4));
+                CellValueObj cellValueObj = new CellValueObj();
+                cellValueObj.setObjId(incomeTable.getOid());
+                LocalDate dateInc = LocalDate.of(incomeTable.getYear(), month, incomeTable.getDay());
+                cellValueObj.setValue(dateInc.toString());
+                cellValueObj.setControl(CashFlowInfo.INCOME_CTRL);
+                TableUtils.setCellValue(cellValueObj, stsTable, it, CashFlowInfo.ExpColumns[0]);
+                cellValueObj = new CellValueObj();
+                cellValueObj.setObjId(incomeTable.getOid());
+                cellValueObj.setValue(incomeTable.getDescription());
+                cellValueObj.setControl(CashFlowInfo.INCOME_CTRL);
+                TableUtils.setCellValue(cellValueObj, stsTable, it, CashFlowInfo.ExpColumns[1]);
+                cellValueObj = new CellValueObj();
+                cellValueObj.setObjId(incomeTable.getOid());
+                cellValueObj.setValue(String.valueOf(incomeTable.getValue()));
+                cellValueObj.setControl(CashFlowInfo.INCOME_CTRL);
+                TableUtils.setCellValue(cellValueObj, stsTable, it, CashFlowInfo.ExpColumns[2]);
+                cellValueObj = new CellValueObj();
+                cellValueObj.setObjId(incomeTable.getOid());
+                cellValueObj.setValue(categ.getCategory());
+                cellValueObj.setControl(CashFlowInfo.INCOME_CTRL);
+                TableUtils.setCellValue(cellValueObj, stsTable, it, CashFlowInfo.ExpColumns[3]);
+                cellValueObj = new CellValueObj();
+                cellValueObj.setObjId(incomeTable.getOid());
+                cellValueObj.setValue(accountTable.getName());
+                cellValueObj.setControl(CashFlowInfo.INCOME_CTRL);
+                TableUtils.setCellValue(cellValueObj, stsTable, it, CashFlowInfo.ExpColumns[4]);
 
                 stsTable.getColumnModel().getColumn(1).setPreferredWidth(200);
                 stsTable.getColumnModel().getColumn(4).setPreferredWidth(100);
@@ -210,8 +277,114 @@ public class TableView extends javax.swing.JPanel {
         }
 
         stsTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        stsTable.addMouseListener(mouseListener);
         stsTable.getTableHeader().setReorderingAllowed(false);
 
+    }
+
+    void mouseOnClick(MouseEvent e) {
+
+        int col = stsTable.getTableHeader().columnAtPoint(e.getPoint());
+        //  Event from Right-Click only
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            if (stsTable.getTableHeader().getCursor().getType() == Cursor.E_RESIZE_CURSOR) {
+                e.consume();
+            } else {
+                stsTable.setColumnSelectionAllowed(true);
+                stsTable.setColumnSelectionInterval(col, col);
+            }
+            r = stsTable.rowAtPoint(e.getPoint());
+            int c = stsTable.columnAtPoint(e.getPoint());
+
+            if (r >= 0 && r < stsTable.getRowCount()) {
+                stsTable.setRowSelectionInterval(r, r);
+                stsTable.setSelectionBackground(Color.CYAN);
+                stsTable.setColumnSelectionInterval(c, c);
+            } else {
+                stsTable.clearSelection();
+            }
+            if (stsTable.getValueAt(r, c) instanceof ObjectCellTableGetValueCellTableView) {
+
+                ObjectCellTableGetValueCellTableView cellTableView = (ObjectCellTableGetValueCellTableView) stsTable.getValueAt(r, c);
+                CellValueObj cell = (CellValueObj) cellTableView.getCellValue();
+                if (cell.getControl() == CashFlowInfo.EXPENSE_CTRL) {
+                    //get the selected ExpenseTable
+                    try {
+                        expLoad = (ExpenseTable) ModelControl.load(ExpenseTable.class, cell.getObjId());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(TableView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    expenseSelected = expLoad;
+                    //get the selected AccountTable
+                    try {
+                        accExp = (AccountTable) ModelControl.load(AccountTable.class, expenseSelected.getAccOid());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(TableView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    if (e.isPopupTrigger() && e.getComponent() instanceof JTable) {
+                        JPopupMenu popup = new JPopupMenu();
+
+                        ActionListener l = (ActionEvent e1) -> {
+
+                            AddExpenseScreen exp = new AddExpenseScreen(expenseSelected.getOid());
+                            exp.setPanelToChange(vc);
+                            exp.setAccount(accExp);
+                            exp.setVisible(true);
+
+                        };
+
+                        popup.removeAll();
+                        menuItem = new JMenuItem("Edit");
+                        popup.add(menuItem);
+                        menuItem.addActionListener(l);
+                        popup.show(e.getComponent(), e.getX(), e.getY());
+                    }
+                } else {
+                    //get the selected IncomeTable
+                    try {
+                        incLoad = (IncomeTable) ModelControl.load(IncomeTable.class, cell.getObjId());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(TableView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    incomeSelected = incLoad;
+                    //get the selected AccountTable
+                    try {
+                        accExp = (AccountTable) ModelControl.load(AccountTable.class, incomeSelected.getAccOid());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(TableView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    if (e.isPopupTrigger() && e.getComponent() instanceof JTable) {
+                        JPopupMenu popup = new JPopupMenu();
+
+                        ActionListener l = (ActionEvent e1) -> {
+
+                            AddIncomeScreen inc = new AddIncomeScreen(incomeSelected.getOid());
+                            inc.setPanelToChange(vc);
+                            inc.setAccount(accExp);
+                            inc.setVisible(true);
+
+                        };
+
+                        popup.removeAll();
+                        menuItem = new JMenuItem("Edit");
+                        popup.add(menuItem);
+                        menuItem.addActionListener(l);
+                        popup.show(e.getComponent(), e.getX(), e.getY());
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    @Override
+    public void setPanelToChange(ValuesChangeEvent panel) {
+        this.vc = panel;
     }
 
 }

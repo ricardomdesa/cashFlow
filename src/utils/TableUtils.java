@@ -8,8 +8,8 @@ package utils;
 //import dta.appl.model.Removable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -112,7 +112,7 @@ public class TableUtils {
 //        tableColumn.setCellEditor(new CellTableBooleanEditor(cellTableBooleanRenderer));
 //    }
     public static javax.swing.JTable create(
-            List header,
+            Map<Object, Class> header,
             List order,
             List rowsData) throws Exception {
 
@@ -120,11 +120,14 @@ public class TableUtils {
         Vector columnIdentifiers = new Vector();
 
         for (Object columnIdentifier : order) {
-            columnIdentifiers.add(columnIdentifier);
+            if (header.containsKey(columnIdentifier)) {
+                columnIdentifiers.add(columnIdentifier);
+                columnClass.add(header.get(columnIdentifier));
+            }
         }
 
-        //ExtendedDefaultTableModel model = new ExtendedDefaultTableModel(columnIdentifiers, columnClass, 0);
-        javax.swing.JTable table = new javax.swing.JTable(new DefaultTableModel(columnIdentifiers, 0));
+        ExtendedDefaultTableModel model = new ExtendedDefaultTableModel(columnIdentifiers, columnClass, 0);
+        javax.swing.JTable table = new javax.swing.JTable(model);
 
         TableUtils.populate(table, rowsData);
 

@@ -16,11 +16,13 @@ import cashFlow.GUI.StatementsScreen;
 import cashFlow.Listeners.ValuesChangeAction;
 import cashFlow.Listeners.ValuesChangeEvent;
 import db.Control.ModelControl;
+import db.tableInterfaces.TableModel;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -214,6 +216,7 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
         // TODO add your handling code here:
         StatementsScreen screen = new StatementsScreen();
         screen.setDataType(new IncomeTable());
+        screen.setPanelToChange(this);
         screen.setAccount(mainAccount);
         screen.configScreen();
         screen.setVisible(true);
@@ -223,6 +226,7 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
         // TODO add your handling code here:
         StatementsScreen screen = new StatementsScreen();
         screen.setDataType(new ExpenseTable());
+        screen.setPanelToChange(this);
         screen.setAccount(mainAccount);
         screen.configScreen();
         screen.setVisible(true);
@@ -318,9 +322,9 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
                 Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
             }
             accValueLbl.setText("R$ " + String.valueOf(mainAccount.getValue()));
-            accTotExpenseLbl.setText("R$ " + String.valueOf(mainAccount.getTotalExpense()));
-            accTotIncomeLbl.setText("R$ " + String.valueOf(mainAccount.getTotalIncome()));
-
+            // preecher com uma consulta e soma dos valores por mes
+            accTotExpenseLbl.setText(getTotalExpense());
+            accTotIncomeLbl.setText(getTotalIncome());
         }
     }
 
@@ -349,7 +353,7 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
     }
 
     @Override
-    public void setValuesChanged(ValuesChangeAction panel) {
+    public void setValuesChanged(ValuesChangeAction panel, Object obj) {
 
         if (panel instanceof javax.swing.JFrame) {
             String childName = panel.getClass().getSimpleName();
@@ -379,6 +383,44 @@ public class MainForm extends javax.swing.JFrame implements ValuesChangeEvent {
 
         accTotIncomeLbl.setToolTipText("Click aqui para ver as movimentações!");
         accTotExpenseLbl.setToolTipText("Click aqui para ver as movimentações!");
+
+    }
+
+    private String getTotalExpense() {
+        List<TableModel> selectWithParam;
+        double value = 0;
+        try {
+            selectWithParam = ModelControl.selectWithParam(ExpenseTable.class, LocalDate.now().getMonth().getValue(), mainAccount.getOid());
+            for (TableModel tableModel : selectWithParam) {
+                if (tableModel instanceof ExpenseTable) {
+                    ExpenseTable expense = (ExpenseTable) tableModel;
+                    value = value + expense.getValue();
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return String.valueOf("R$ " + value);
+
+    }
+
+    private String getTotalIncome() {
+        List<TableModel> selectWithParam;
+        double value = 0;
+        try {
+            selectWithParam = ModelControl.selectWithParam(IncomeTable.class, LocalDate.now().getMonth().getValue(), mainAccount.getOid());
+            for (TableModel tableModel : selectWithParam) {
+                if (tableModel instanceof IncomeTable) {
+                    IncomeTable income = (IncomeTable) tableModel;
+                    value = value + income.getValue();
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(MainForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return String.valueOf("R$ " + value);
 
     }
 

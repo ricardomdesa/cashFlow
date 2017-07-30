@@ -101,7 +101,8 @@ public class ExpenseTableControl implements TableControl {
                 + "  t.EXP_YEAR as EXP_YEAR, "
                 + "  t.EXP_HASH_ID as EXP_HASH_ID "
                 + " from " + EXPENSE_TABLE + " as t"
-                + " where t.EXP_MONTH=? and t.EXP_ACC_OID = ?";
+                + " where t.EXP_MONTH=? and t.EXP_ACC_OID = ?"
+                + " order by t.EXP_DAY";
 
         protected static final String SQL_UPDATE
                 = " update " + EXPENSE_TABLE + " as t "
@@ -247,7 +248,35 @@ public class ExpenseTableControl implements TableControl {
 
     @Override
     public void update(TableModel tableModel) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+
+            if (tableModel instanceof ExpenseTable) {
+                ExpenseTable expTable = (ExpenseTable) tableModel;
+
+                expTable.computeHash();
+
+                pstn_update.setInt(1, expTable.getAccOid());
+                pstn_update.setDouble(2, expTable.getValue());
+                pstn_update.setBoolean(3, expTable.isPayed());
+                pstn_update.setBoolean(4, expTable.isRepeat());
+                pstn_update.setString(5, expTable.getDescription());
+                pstn_update.setInt(6, expTable.getCategory());
+                pstn_update.setInt(7, expTable.getDay());
+                pstn_update.setInt(8, expTable.getMonth());
+                pstn_update.setInt(9, expTable.getYear());
+                pstn_update.setString(10, expTable.getHashId());
+
+                pstn_update.setInt(11, expTable.getOid());
+
+                pstn_update.executeUpdate();
+
+            }
+
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            conn.commit();
+        }
     }
 
     @Override
@@ -268,6 +297,7 @@ public class ExpenseTableControl implements TableControl {
                 expense = new ExpenseTable();
 
                 expense.setOid((Integer) id);
+                expense.setAccOid(resultSet.getInt("EXP_ACC_OID"));
                 expense.setDescription(resultSet.getString("EXP_DESCRIPTION"));
                 expense.setCategory(resultSet.getInt("EXP_CATEGORY_ID"));
                 expense.setDay(resultSet.getInt("EXP_DAY"));

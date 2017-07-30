@@ -27,6 +27,8 @@ public class TableFiller {
             catTable.setCategory((String) Categorie[0]);
             catTable.setType((String) Categorie[1]);
             catTable.setColor("white");
+            catTable.setGoalValue(0);
+            catTable.setPercentage(0);
 
             try {
                 ModelControl.save(catTable);
